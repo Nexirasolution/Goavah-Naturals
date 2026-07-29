@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
+import { ArrowRight } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 async function getData() {
@@ -47,47 +48,57 @@ export default async function HomePage() {
 
 
 
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-        <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">Explore</p>
-          <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
-            Shop by Category
-          </h2>
-        </div>
+     {/* Categories */}
+<section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
+  <div className="mb-8 text-center">
 
-        {categories.length === 0 ? (
-          <p className="text-center text-muted">
-            Categories will appear here once added from the admin panel.
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 gap-6 md:grid-cols-6">
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/products?category=${cat._id}`}
-                className="group flex flex-col items-center"
-              >
-                {/* Circular Image */}
-                <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg">
-                <Image
-                  src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-                  alt={cat.name}
-                  fill
-                  sizes="112px"
-                  className="object-cover"
-                />
-              </div>
-                {/* Category Name */}
-                <h3 className="mt-3 text-center text-sm font-medium text-gray-800 transition group-hover:text-green-700">
-                  {cat.name}
-                </h3>
-              </Link>
-            ))}
+    <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+      Shop by Category
+    </h2>
+  </div>
+
+  {categories.length === 0 ? (
+    <p className="text-center text-muted">
+      Categories will appear here once added from the admin panel.
+    </p>
+  ) : (
+    <div className="grid grid-cols-4 gap-4 md:grid-cols-6 md:gap-6">
+      {categories.slice(0, 3).map((cat) => (
+        <Link
+          key={cat._id}
+          href={`/products?category=${cat._id}`}
+          className="group flex flex-col items-center"
+        >
+          <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
+            <Image
+              src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
+              alt={cat.name}
+              fill
+              sizes="(max-width:768px) 80px, 112px"
+              className="object-cover"
+            />
           </div>
-        )}
-      </section>
 
+          <h3 className="mt-2 text-center text-xs font-medium text-gray-800 transition group-hover:text-green-700 md:text-sm">
+            {cat.name}
+          </h3>
+        </Link>
+      ))}
+
+      {/* View All */}
+<Link
+  href="/products"
+  className="group flex flex-col items-center justify-center"
+>
+  <ArrowRight className="h-10 w-10 text-green-700 transition-transform duration-300 group-hover:translate-x-2" />
+
+  <span className="mt-2 text-sm font-semibold text-green-700 group-hover:underline">
+    View All
+  </span>
+</Link>
+    </div>
+  )}
+</section>
      <HeroSlider/>
 
 
