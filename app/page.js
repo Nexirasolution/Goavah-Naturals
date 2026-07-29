@@ -44,7 +44,6 @@ export default async function HomePage() {
     <>
       <Navbar />
 
-      <HeroSlider/>
 
 
 
@@ -75,6 +74,7 @@ export default async function HomePage() {
                   src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
                   alt={cat.name}
                   fill
+                  sizes="112px"
                   className="object-cover"
                 />
               </div>
@@ -87,6 +87,9 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+     <HeroSlider/>
+
 
       {/* Featured products */}
       {featured.length > 0 && (
