@@ -10,11 +10,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const slides = [
-  {
-    image: "/images/banner1.png",
-    title: "Premium Handmade Collection",
-    subtitle: "Beautiful handcrafted products made with love.",
-  },
+ 
   {
     image: "/images/banner2.png",
     title: "Eco Friendly Products",
@@ -34,8 +30,8 @@ const slides = [
 
 export default function HeroSlider() {
   return (
-    <section className="relative h-[90vh] min-h-[650px]">
-      <Swiper
+<section className="relative h-[45vh] sm:h-[55vh] md:h-[65vh] lg:h-[75vh]">
+        <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation
         pagination={{ clickable: true }}
