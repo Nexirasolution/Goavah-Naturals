@@ -1,0 +1,84 @@
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { connectDB } from "@/lib/mongodb";
+import Product from "@/models/Product";
+import "@/models/Category";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ProductDetailActions from "@/components/ProductDetailActions";
+import { LeafIcon } from "@/components/Icons";
+
+export const dynamic = "force-dynamic";
+
+async function getProduct(slug) {
+  await connectDB();
+  const product = await Product.findOne({ slug, isActive: true }).populate("category", "name slug").lean();
+  return product ? JSON.parse(JSON.stringify(product)) : null;
+}
+
+export default async function ProductDetailPage({ params }) {
+  const { id } = await params;
+  const product = await getProduct(id);
+  if (!product) notFound();
+
+  const image = product.images?.[0]?.url;
+
+  return (
+    <>
+      <Navbar />
+      <section className="mx-auto max-w-6xl px-5 py-12 md:px-8">
+        <div className="grid gap-12 md:grid-cols-2">
+          <div className="aspect-square overflow-hidden rounded-xl2 bg-champagne shadow-card">
+            {image ? (
+              <Image src={image} alt={product.name} width={800} height={800} className="h-full w-full object-cover" priority />
+            ) : (
+              <div className="flex h-full items-center justify-center text-forest/30">
+                <LeafIcon className="h-16 w-16" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
+              {product.category?.name}
+            </p>
+            <h1 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">{product.name}</h1>
+
+            <div className="mt-4 flex items-baseline gap-3">
+              <span className="font-display text-3xl font-bold text-forest">₹{product.price}</span>
+              {product.compareAtPrice > product.price && (
+                <span className="text-base text-muted line-through">₹{product.compareAtPrice}</span>
+              )}
+              <span className="text-sm text-muted">/ {product.unit}</span>
+            </div>
+
+            <p className="mt-6 leading-relaxed text-ink/80">
+              {product.description || product.shortDescription || "A premium handcrafted product from KMC Organic Farm, made with natural, eco-friendly materials."}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {product.attributes?.handmade && <Tag label="Handmade with Care" />}
+              {product.attributes?.natural && <Tag label="100% Natural" />}
+              {product.attributes?.ecoFriendly && <Tag label="Eco-Friendly" />}
+            </div>
+
+            <p className="mt-4 text-sm text-muted">
+              {product.stock > 0 ? `${product.stock} in stock` : "Currently unavailable"}
+            </p>
+
+            <ProductDetailActions product={product} />
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </>
+  );
+}
+
+function Tag({ label }) {
+  return (
+    <span className="rounded-full border border-gold/30 bg-champagne px-3 py-1 text-xs font-medium text-forest">
+      {label}
+    </span>
+  );
+}

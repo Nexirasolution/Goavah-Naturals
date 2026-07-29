@@ -1,0 +1,217 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { useCart } from "@/context/CartContext";
+
+const SHIPPING_FEE = 0; // Free shipping — adjust in admin logic if needed
+
+export default function CheckoutPage() {
+  const { items, subtotal, clearCart, hydrated } = useCart();
+  const router = useRouter();
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    city: "",
+    state: "Tamil Nadu",
+    pincode: "",
+  });
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [placedOrder, setPlacedOrder] = useState(null);
+
+  function update(field, value) {
+    setForm((f) => ({ ...f, [field]: value }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+
+    if (items.length === 0) {
+      setError("Your cart is empty.");
+      return;
+    }
+    if (!/^\d{10}$/.test(form.phone.replace(/\D/g, "").slice(-10))) {
+      setError("Enter a valid 10-digit phone number.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: form,
+          items,
+          paymentMethod,
+          shippingFee: SHIPPING_FEE,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to place order.");
+
+      setPlacedOrder(data.order);
+      clearCart();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!hydrated) return null;
+
+  if (placedOrder) {
+    return (
+      <>
+        <Navbar />
+        <section className="mx-auto max-w-xl px-5 py-20 text-center md:px-8">
+          <span className="badge-stamp mx-auto flex h-16 w-16 items-center justify-center border-gold/40 bg-forest text-ivory">
+            ✓
+          </span>
+          <h1 className="mt-6 font-display text-3xl font-bold text-forest">Order Placed!</h1>
+          <p className="mt-3 text-muted">
+            Thank you for choosing KMC Organic Farm. Your order number is:
+          </p>
+          <p className="mt-2 font-display text-xl font-bold text-terracotta">{placedOrder.orderNumber}</p>
+          <p className="mt-4 text-sm text-muted">
+            Save this number, or use your phone number, to track your order anytime.
+          </p>
+          <div className="mt-8 flex justify-center gap-4">
+            <a
+              href="/track-order"
+              className="rounded-full border border-forest/30 px-8 py-3 text-sm font-semibold text-forest hover:bg-champagne"
+            >
+              Track Order
+            </a>
+            <a
+              href="/products"
+              className="rounded-full bg-forest px-8 py-3 text-sm font-semibold text-ivory shadow-soft hover:bg-forest-light"
+            >
+              Continue Shopping
+            </a>
+          </div>
+        </section>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <section className="mx-auto max-w-4xl px-5 py-12 md:px-8">
+        <h1 className="font-display text-3xl font-bold text-forest">Checkout</h1>
+
+        {items.length === 0 ? (
+          <p className="mt-8 text-muted">Your cart is empty. <a href="/products" className="text-forest underline">Shop now</a></p>
+        ) : (
+          <form onSubmit={handleSubmit} className="mt-8 grid gap-10 md:grid-cols-3">
+            <div className="space-y-4 md:col-span-2">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Full Name" required value={form.name} onChange={(v) => update("name", v)} />
+                <Field label="Phone Number" required value={form.phone} onChange={(v) => update("phone", v)} type="tel" />
+              </div>
+              <Field label="Email (optional)" value={form.email} onChange={(v) => update("email", v)} type="email" />
+              <Field label="Delivery Address" required value={form.address} onChange={(v) => update("address", v)} textarea />
+              <div className="grid gap-4 sm:grid-cols-3">
+                <Field label="City" value={form.city} onChange={(v) => update("city", v)} />
+                <Field label="State" value={form.state} onChange={(v) => update("state", v)} />
+                <Field label="Pincode" value={form.pincode} onChange={(v) => update("pincode", v)} />
+              </div>
+
+              <div>
+                <p className="mb-2 text-sm font-semibold text-ink">Payment Method</p>
+                <div className="flex gap-3">
+                  {["COD", "UPI", "Online"].map((m) => (
+                    <button
+                      type="button"
+                      key={m}
+                      onClick={() => setPaymentMethod(m)}
+                      className={`rounded-full border px-5 py-2 text-xs font-semibold transition ${
+                        paymentMethod === m
+                          ? "border-forest bg-forest text-ivory"
+                          : "border-gold/30 text-ink/70 hover:bg-champagne"
+                      }`}
+                    >
+                      {m === "COD" ? "Cash on Delivery" : m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {error && <p className="text-sm text-terracotta">{error}</p>}
+            </div>
+
+            <div className="h-fit rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
+              <h2 className="font-display text-lg font-bold text-forest">Order Summary</h2>
+              <div className="mt-4 space-y-2">
+                {items.map((item) => (
+                  <div key={item.productId} className="flex justify-between text-sm text-ink/80">
+                    <span>{item.name} × {item.quantity}</span>
+                    <span>₹{item.price * item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="leaf-divider my-4" />
+              <div className="flex justify-between text-sm text-ink/80">
+                <span>Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="flex justify-between text-sm text-ink/80">
+                <span>Shipping</span>
+                <span>{SHIPPING_FEE === 0 ? "Free" : `₹${SHIPPING_FEE}`}</span>
+              </div>
+              <div className="mt-2 flex justify-between font-display text-base font-bold text-forest">
+                <span>Total</span>
+                <span>₹{subtotal + SHIPPING_FEE}</span>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-6 w-full rounded-full bg-forest px-8 py-3.5 text-sm font-semibold text-ivory shadow-soft transition hover:bg-forest-light disabled:opacity-60"
+              >
+                {loading ? "Placing Order..." : "Place Order"}
+              </button>
+            </div>
+          </form>
+        )}
+      </section>
+      <Footer />
+    </>
+  );
+}
+
+function Field({ label, value, onChange, required, type = "text", textarea }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-semibold text-ink/70">
+        {label} {required && <span className="text-terracotta">*</span>}
+      </span>
+      {textarea ? (
+        <textarea
+          required={required}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          rows={3}
+          className="w-full rounded-xl border border-gold/30 bg-white px-4 py-2.5 text-sm outline-none focus:border-forest"
+        />
+      ) : (
+        <input
+          required={required}
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-xl border border-gold/30 bg-white px-4 py-2.5 text-sm outline-none focus:border-forest"
+        />
+      )}
+    </label>
+  );
+}
