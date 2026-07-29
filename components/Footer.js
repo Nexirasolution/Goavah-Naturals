@@ -68,48 +68,7 @@ export default function Footer() {
         </div>
 
 
-        {/* Column 2 - Quick Links */}
-        <div className="md:pl-20">
 
-          <h3 className="text-xl font-semibold mb-5">
-            Quick Links
-          </h3>
-
-          <ul className="space-y-3 text-green-100">
-
-            <li>
-              <Link href="/" className="hover:text-green-300 transition">
-                Home
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/products" className="hover:text-green-300 transition">
-                Products
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/about" className="hover:text-green-300 transition">
-                About Us
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/contact" className="hover:text-green-300 transition">
-                Contact
-              </Link>
-            </li>
-
-            <li>
-              <Link href="/track-order" className="hover:text-green-300 transition">
-                Track Order
-              </Link>
-            </li>
-
-          </ul>
-
-        </div>
 
       </div>
 

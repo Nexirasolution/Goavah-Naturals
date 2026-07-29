@@ -21,7 +21,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/logo.jpeg"
-            alt="KMC Organic Farm"
+            alt="KMC Iyarkai Creation"
             width={55}
             height={55}
             priority
@@ -33,7 +33,7 @@ export default function Navbar() {
               KMC
             </h1>
             <p className="text-xs uppercase tracking-[0.25em] text-muted">
-              Organic Farm
+              Iyarkai Creation
             </p>
           </div>
         </Link>
@@ -64,12 +64,28 @@ export default function Navbar() {
             )}
           </Link>
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 md:hidden"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            <span className="block h-0.5 w-4 bg-ink" />
-          </button>
+  className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 md:hidden"
+  onClick={() => setOpen(!open)}
+  aria-label="Toggle menu"
+>
+  <div className="flex flex-col justify-between h-4 w-5">
+    <span
+      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+        open ? "translate-y-[7px] rotate-45" : ""
+      }`}
+    />
+    <span
+      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+        open ? "opacity-0" : ""
+      }`}
+    />
+    <span
+      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+        open ? "-translate-y-[7px] -rotate-45" : ""
+      }`}
+    />
+  </div>
+</button>
         </div>
       </div>
 

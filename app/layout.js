@@ -1,6 +1,7 @@
 import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -29,9 +30,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
       <body className="font-body antialiased">
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          {children}
+
+          {/* Floating WhatsApp Button */}
+          <FloatingWhatsApp />
+        </CartProvider>
       </body>
     </html>
   );
-  
 }

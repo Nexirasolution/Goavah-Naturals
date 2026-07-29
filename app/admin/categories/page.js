@@ -103,35 +103,87 @@ export default function AdminCategoriesPage() {
         </button>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {loading ? (
-          <p className="text-muted">Loading...</p>
-        ) : categories.length === 0 ? (
-          <p className="text-muted">No categories yet. Add your first category.</p>
-        ) : (
-          categories.map((c) => {
-            const Icon = CATEGORY_ICONS[c.icon] || LeafIcon;
-            return (
-              <div key={c._id} className="rounded-xl2 border border-gold/15 bg-white p-5 shadow-card">
-                <div className="flex items-start justify-between">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-champagne text-forest">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className={`rounded-full px-3 py-1 text-xs font-medium ${c.isActive ? "bg-forest/10 text-forest" : "bg-muted/10 text-muted"}`}>
-                    {c.isActive ? "Active" : "Hidden"}
-                  </span>
+<div className="mt-6 space-y-4">
+  {loading ? (
+    <p className="text-muted">Loading...</p>
+  ) : categories.length === 0 ? (
+    <div className="rounded-2xl bg-white p-8 text-center shadow-card">
+      <p className="text-muted">No categories yet.</p>
+    </div>
+  ) : (
+    categories.map((c) => {
+      const Icon = CATEGORY_ICONS[c.icon] || LeafIcon;
+
+      return (
+        <div
+          key={c._id}
+          className="rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
+        >
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+            {/* Left Side */}
+            <div className="flex items-center gap-4 flex-1">
+
+              <button className="hidden md:block text-gray-400 text-2xl">
+                ›
+              </button>
+
+              {c.image?.url ? (
+                <img
+                  src={c.image.url}
+                  alt={c.name}
+                  className="h-16 w-16 rounded-full object-cover border border-gray-200"
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-champagne">
+                  <Icon className="h-7 w-7 text-forest" />
                 </div>
-                <p className="mt-3 font-display text-base font-bold text-ink">{c.name}</p>
-                <p className="mt-1 text-xs text-muted line-clamp-2">{c.description || "No description"}</p>
-                <div className="mt-4 flex gap-3">
-                  <button onClick={() => openEdit(c)} className="text-xs font-semibold text-forest hover:underline">Edit</button>
-                  <button onClick={() => handleDelete(c._id)} className="text-xs font-semibold text-terracotta hover:underline">Delete</button>
-                </div>
+              )}
+
+              <div className="min-w-0">
+                <h2 className="font-display text-lg md:text-xl font-bold text-ink">
+                  {c.name}
+                </h2>
+
+                <p className="text-sm text-muted">
+                  /{c.name.toLowerCase().replace(/\s+/g, "-")}
+                </p>
+
+                {c.description && (
+                  <p className="mt-1 line-clamp-2 text-sm text-muted">
+                    {c.description}
+                  </p>
+                )}
               </div>
-            );
-          })
-        )}
-      </div>
+            </div>
+
+            {/* Right Side */}
+            <div className="flex items-center justify-end gap-5">
+
+              <button
+                title="Edit"
+                onClick={() => openEdit(c)}
+                className="text-forest hover:scale-110 transition"
+              >
+                ✏️
+              </button>
+
+              <button
+                title="Delete"
+                onClick={() => handleDelete(c._id)}
+                className="text-red-600 hover:scale-110 transition"
+              >
+                🗑️
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      );
+    })
+  )}
+</div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? "Edit Category" : "Add Category"}>
         <form onSubmit={handleSave} className="space-y-4">

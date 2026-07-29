@@ -3,68 +3,121 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LeafIcon } from "./Icons";
-import Image from "next/image";
+
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: "▤" },
   { href: "/admin/products", label: "Products", icon: "🛍" },
   { href: "/admin/categories", label: "Categories", icon: "☰" },
   { href: "/admin/orders", label: "Orders", icon: "🧾" },
   { href: "/admin/inventory", label: "Inventory", icon: "📦" },
+  { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ open, setOpen }) {
   const pathname = usePathname();
   const router = useRouter();
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+
     router.push("/admin/login");
     router.refresh();
   }
 
   return (
-    <aside className="flex min-h-screen w-72 shrink-0 flex-col border-r border-gold/15 bg-forest text-ivory">      <div className="flex items-center gap-2.5 px-6 py-6">
-        <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-gold/40 bg-ivory shadow-md">
-  <Image
-    src="/images/logo.jpeg"
-    alt="KMC Organic Farm Logo"
-    fill
-    className="object-cover"
-  />
-</div>
-        <div>
-          <p className="font-display text-base font-bold">KMC Admin</p>
-          <p className="-mt-0.5 text-[10px] uppercase tracking-widest text-ivory/50">Organic Farm</p>
+    <>
+      {/* Mobile Overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed left-0 top-0 z-50
+          h-screen w-64
+          bg-forest text-ivory
+          border-r border-gold/15
+          flex flex-col
+          transform transition-transform duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          lg:translate-x-0
+        `}
+      >
+        {/* Mobile Close Button */}
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4 lg:hidden">
+          <h2 className="font-bold text-lg">Menu</h2>
+
+          <button
+            onClick={() => setOpen(false)}
+            className="text-2xl"
+          >
+            ✕
+          </button>
         </div>
-      </div>
 
-      <nav className="flex-1 space-y-1 px-3">
-        {NAV.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition ${
-                active ? "bg-gold/90 text-forest-dark" : "text-ivory/75 hover:bg-ivory/10"
-              }`}
-            >
-              <span className="w-4 text-center text-xs">{item.icon}</span>
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-6 py-6">
+          <span className="badge-stamp h-10 w-10 border-gold/40 bg-ivory/10">
+            <LeafIcon className="h-5 w-5" />
+          </span>
 
-      <div className="border-t border-ivory/10 p-3">
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-ivory/75 transition hover:bg-ivory/10"
-        >
-          <span className="w-4 text-center text-xs">⏻</span>
-          Logout
-        </button>
-      </div>
-    </aside>
+          <div>
+            <p className="font-display text-lg font-bold">
+              KMC Admin
+            </p>
+
+            <p className="text-[10px] uppercase tracking-widest text-ivory/60">
+              Organic Farm
+            </p>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-2 px-3">
+          {NAV.map((item) => {
+            const active =
+              item.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition
+                  ${
+                    active
+                      ? "bg-gold text-forest-dark"
+                      : "text-ivory/80 hover:bg-white/10"
+                  }`}
+              >
+                <span className="w-5 text-center">
+                  {item.icon}
+                </span>
+
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Logout */}
+        <div className="border-t border-white/10 p-3">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-ivory/80 transition hover:bg-white/10"
+          >
+            <span>⏻</span>
+            Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

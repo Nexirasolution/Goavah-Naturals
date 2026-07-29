@@ -1,20 +1,37 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
+import { Menu } from "lucide-react";
 
 export default function AdminLayout({ children }) {
-  const pathname = usePathname();
-  const isLogin = pathname === "/admin/login";
-
-  if (isLogin) {
-    return <div className="min-h-screen bg-ivory">{children}</div>;
-  }
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-champagne/40">
-      <AdminSidebar />
-      <main className="flex-1 overflow-x-hidden px-6 py-8 md:px-10">{children}</main>
+    <div className="flex min-h-screen bg-[#F8F3E8]">
+      {/* Mobile Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between bg-white px-4 shadow lg:hidden">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setOpen(true)}
+            className="text-gray-700"
+          >
+            <Menu size={30} />
+          </button>
+
+          <h1 className="text-2xl font-bold text-green-700">
+            KMC Admin
+          </h1>
+        </div>
+      </header>
+
+      {/* Sidebar */}
+      <AdminSidebar open={open} setOpen={setOpen} />
+
+      {/* Main Content */}
+      <main className="flex-1 min-h-screen p-4 pt-20 lg:ml-64 lg:p-6 lg:pt-6">
+        {children}
+      </main>
     </div>
   );
 }

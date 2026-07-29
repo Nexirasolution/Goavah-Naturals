@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "@/components/Icons";
-
+import HeroSlider from "@/components/HeroSlider";
 export const dynamic = "force-dynamic";
 
 async function getData() {
@@ -44,66 +44,9 @@ export default async function HomePage() {
     <>
       <Navbar />
 
-      {/* Hero */}
-            {/* Hero */}
-        <section className="relative h-[90vh] min-h-[650px] overflow-hidden">
+      <HeroSlider/>
 
-          {/* Background Video */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster="/images/hero-poster.jpg"
-            className="absolute inset-0 h-full w-full object-cover"
-          >
-            <source src="/videos/farm.mp4" type="video/mp4" />
-          </video>
 
-          {/* Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/50 to-black/30" />
-
-          {/* Decorative Overlay */}
-          <div className="absolute inset-0 bg-leaf-corner opacity-20" />
-
-          {/* Hero Content */}
-          <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 md:px-8">
-            <div className="max-w-2xl">
-
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white backdrop-blur-md">
-                <LeafIcon className="h-4 w-4" />
-                Eco-Friendly • Handmade • Natural
-              </span>
-
-              <h1 className="mt-8 font-display text-5xl font-bold leading-tight text-white md:text-7xl">
-                Pure Nature.
-                <br />
-                Handmade with Love.
-              </h1>
-
-              
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                <Link
-                  href="/products"
-                  className="rounded-full bg-forest px-8 py-4 font-semibold text-white transition hover:scale-105 hover:bg-green-800"
-                >
-                  Shop Collection
-                </Link>
-
-                <Link
-                  href="/track-order"
-                  className="rounded-full border border-white px-8 py-4 font-semibold text-white transition hover:bg-white hover:text-black"
-                >
-                  Track Order
-                </Link>
-              </div>
-
-            </div>
-          </div>
-
-        </section>
 
       {/* Categories */}
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
@@ -128,13 +71,13 @@ export default async function HomePage() {
               >
                 {/* Circular Image */}
                 <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg">
-                  <Image
-                    src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-                    alt={cat.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <Image
+                  src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
+                  alt={cat.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
                 {/* Category Name */}
                 <h3 className="mt-3 text-center text-sm font-medium text-gray-800 transition group-hover:text-green-700">
                   {cat.name}
