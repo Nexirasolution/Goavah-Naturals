@@ -2,7 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductsGrid from "@/components/ProductsGrid";
 
-export const metadata = { title: "Shop | KMC Organic Farm" };
+export const metadata = { title: "Shop | KMC Iyarkai Creation" };
 
 export default async function ProductsPage({ searchParams }) {
   const sp = await searchParams;

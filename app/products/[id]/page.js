@@ -53,7 +53,7 @@ export default async function ProductDetailPage({ params }) {
             </div>
 
             <p className="mt-6 leading-relaxed text-ink/80">
-              {product.description || product.shortDescription || "A premium handcrafted product from KMC Organic Farm, made with natural, eco-friendly materials."}
+              {product.description || product.shortDescription || "A premium handcrafted product from KMC Iyarkai Creation, made with natural, eco-friendly materials."}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">

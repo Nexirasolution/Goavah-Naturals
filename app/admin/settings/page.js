@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
-    storeName: "KMC Organic Farm",
+    storeName: "KMC Iyarkai Cretion",
     email: "admin@kmcorganicfarm.com",
     phone: "",
     whatsapp: "",
@@ -18,7 +18,7 @@ export default function SettingsPage() {
     facebook: "",
     youtube: "",
 
-    seoTitle: "KMC Organic Farm",
+    seoTitle: "KMC Iyarkai Creation",
     seoDescription: "",
 
     maintenanceMode: false,
@@ -35,7 +35,7 @@ export default function SettingsPage() {
 
   const handleReset = () => {
     setSettings({
-      storeName: "KMC Organic Farm",
+      storeName: "KMC Iyarkai Creation",
       email: "admin@kmcorganicfarm.com",
       phone: "",
       whatsapp: "",
@@ -49,7 +49,7 @@ export default function SettingsPage() {
       facebook: "",
       youtube: "",
 
-      seoTitle: "KMC Organic Farm",
+      seoTitle: "KMC Iyarkai Creation",
       seoDescription: "",
 
       maintenanceMode: false,

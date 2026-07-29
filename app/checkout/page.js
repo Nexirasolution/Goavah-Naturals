@@ -78,7 +78,7 @@ export default function CheckoutPage() {
           </span>
           <h1 className="mt-6 font-display text-3xl font-bold text-forest">Order Placed!</h1>
           <p className="mt-3 text-muted">
-            Thank you for choosing KMC Organic Farm. Your order number is:
+            Thank you for choosing KMC Iyarkai Creation. Your order number is:
           </p>
           <p className="mt-2 font-display text-xl font-bold text-terracotta">{placedOrder.orderNumber}</p>
           <p className="mt-4 text-sm text-muted">

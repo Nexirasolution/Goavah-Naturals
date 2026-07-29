@@ -16,9 +16,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "KMC Organic Farm | Natural & Handmade Products",
+  title: "KMC Iyarkai Creation| Natural & Handmade Products",
   description:
-    "KMC Organic Farm — 100% natural, eco-friendly, handmade products from Kallidaikurichi, Tirunelveli.",
+    "KMC Iyarkai Creation — 100% natural, eco-friendly, handmade products from Kallidaikurichi, Tirunelveli.",
   icons: {
     icon: "/images/logo.jpeg",
     shortcut: "/images/logo.jpeg",

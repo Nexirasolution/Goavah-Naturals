@@ -20,14 +20,14 @@ export default function Footer() {
 
   <Image
     src="/images/logo.jpeg"
-    alt="KMC Organic Farm Logo"
+    alt="KMC Iyarkai Creation Logo"
     width={80}
     height={80}
     className="rounded-full object-contain"
   />
 
   <h2 className="text-2xl font-semibold">
-    KMC Organic Farm
+    KMC Iyarkai Creation
   </h2>
 
 </div>
@@ -77,7 +77,7 @@ export default function Footer() {
       <div className="border-t border-green-700 mt-10 pt-5 text-center text-sm text-green-200">
 
         <p>
-          © {new Date().getFullYear()} KMC Organic Farm. All rights reserved.
+          © {new Date().getFullYear()} KMC Iyarkai Creation. All rights reserved.
         </p>
 
         <p className="mt-2">

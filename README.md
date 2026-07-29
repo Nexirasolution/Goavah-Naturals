@@ -1,4 +1,4 @@
-# KMC Organic Farm — E-commerce Website
+# KMC Iyarkai Creation — E-commerce Website
 
 A premium, full-stack e-commerce site for KMC's natural & handmade products —
 clay products, wooden crafts, wire bags, organic farm inputs and herbal
