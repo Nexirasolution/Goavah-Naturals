@@ -13,11 +13,10 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "dotenv": "^16.4.7",
-    "jose": "^6.2.4",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
-    "next": "15.1.4",
+    "next": "^16.2.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.0"
