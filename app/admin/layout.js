@@ -1,11 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
 import { Menu } from "lucide-react";
 
 export default function AdminLayout({ children }) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Don't show sidebar/header on login page
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="flex min-h-screen bg-[#F8F3E8]">
