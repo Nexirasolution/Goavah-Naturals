@@ -17,6 +17,8 @@ const CATEGORY_IMAGES = {
   "Herbal Products": "/categroy/herbal-products.png",
 };
 
+const PAGE_SIZE = 18;
+
 async function getCategories() {
   await connectDB();
   const categories = await Category.find({ isActive: true })
@@ -30,8 +32,18 @@ export const metadata = {
   description: "Browse all product categories — handmade, natural, and eco-friendly.",
 };
 
-export default async function CategoriesPage() {
-  const categories = await getCategories();
+export default async function CategoriesPage({ searchParams }) {
+  const { page: pageParam } = await searchParams;
+  const allCategories = await getCategories();
+
+  const totalPages = Math.max(1, Math.ceil(allCategories.length / PAGE_SIZE));
+  const currentPage = Math.min(
+    Math.max(1, parseInt(pageParam || "1", 10) || 1),
+    totalPages
+  );
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const categories = allCategories.slice(start, start + PAGE_SIZE);
 
   return (
     <>
@@ -47,38 +59,124 @@ export default async function CategoriesPage() {
           </h1>
         </div>
 
-        {categories.length === 0 ? (
+        {allCategories.length === 0 ? (
           <p className="text-center text-muted">
             Categories will appear here once added from the admin panel.
           </p>
         ) : (
-          <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-            {categories.map((cat) => (
-              <Link
-                key={cat._id}
-                href={`/products?category=${cat._id}`}
-                className="group flex flex-col items-center"
-              >
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
-                  <Image
-                    src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-                    alt={cat.name}
-                    fill
-                    sizes="(max-width:768px) 96px, 112px"
-                    className="object-cover"
-                  />
-                </div>
+          <>
+            <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+              {categories.map((cat) => (
+                <Link
+                  key={cat._id}
+                  href={`/products?category=${cat._id}`}
+                  className="group flex flex-col items-center"
+                >
+                  <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
+                    <Image
+                      src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
+                      alt={cat.name}
+                      fill
+                      sizes="(max-width:768px) 96px, 112px"
+                      className="object-cover"
+                    />
+                  </div>
 
-                <h3 className="mt-3 text-center text-sm font-semibold text-ink transition group-hover:text-forest md:text-base">
-                  {cat.name}
-                </h3>
-              </Link>
-            ))}
-          </div>
+                  <h3 className="mt-3 text-center text-sm font-semibold text-ink transition group-hover:text-forest md:text-base">
+                    {cat.name}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination currentPage={currentPage} totalPages={totalPages} />
+            )}
+          </>
         )}
       </section>
 
       <Footer />
     </>
   );
+}
+
+function Pagination({ currentPage, totalPages }) {
+  const pages = getPageNumbers(currentPage, totalPages);
+
+  return (
+    <nav className="mt-12 flex items-center justify-center gap-2">
+      <PageLink
+        page={currentPage - 1}
+        disabled={currentPage === 1}
+        label="‹ Prev"
+      />
+
+      {pages.map((p, i) =>
+        p === "..." ? (
+          <span key={`dots-${i}`} className="px-2 text-sm text-muted">
+            …
+          </span>
+        ) : (
+          <PageLink key={p} page={p} active={p === currentPage} label={p} />
+        )
+      )}
+
+      <PageLink
+        page={currentPage + 1}
+        disabled={currentPage === totalPages}
+        label="Next ›"
+      />
+    </nav>
+  );
+}
+
+function PageLink({ page, label, active, disabled }) {
+  if (disabled) {
+    return (
+      <span className="rounded-full px-4 py-2 text-sm font-medium text-muted/40">
+        {label}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={page <= 1 ? "/categories" : `/categories?page=${page}`}
+      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+        active
+          ? "bg-forest text-ivory"
+          : "text-ink/70 hover:bg-champagne"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
+function getPageNumbers(current, total) {
+  const delta = 1;
+  const range = [];
+  const rangeWithDots = [];
+  let last;
+
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+      range.push(i);
+    }
+  }
+
+  for (const i of range) {
+    if (last) {
+      if (i - last === 2) {
+        rangeWithDots.push(last + 1);
+      } else if (i - last > 2) {
+        rangeWithDots.push("...");
+      }
+    }
+    rangeWithDots.push(i);
+    last = i;
+  }
+
+  return rangeWithDots;
 }
