@@ -1,6 +1,5 @@
-// app/api/razorpay/create-order/route.js
 import { NextResponse } from "next/server";
-import razorpay from "@/lib/razorpay";
+import { getRazorpay } from "@/lib/razorpay";
 
 export async function POST(req) {
   try {
@@ -11,6 +10,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid amount." }, { status: 400 });
     }
 
+    const razorpay = getRazorpay();
+
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100), // paise
       currency: "INR",
@@ -20,6 +21,6 @@ export async function POST(req) {
     return NextResponse.json({ order });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to create Razorpay order." }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Failed to create Razorpay order." }, { status: 500 });
   }
 }
