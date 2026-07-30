@@ -14,13 +14,13 @@ export const dynamic = "force-dynamic";
 async function getData() {
   await connectDB();
   const categories = await Category.find({ isActive: true }).sort({ sortOrder: 1 }).lean();
-  const featured = await Product.find({ isActive: true, isFeatured: true })
+  const bestSelling = await Product.find({ isActive: true, isFeatured: true })
     .populate("category", "name slug")
     .limit(8)
     .lean();
   return {
     categories: JSON.parse(JSON.stringify(categories)),
-    featured: JSON.parse(JSON.stringify(featured)),
+    bestSelling: JSON.parse(JSON.stringify(bestSelling)),
   };
 }
 
@@ -39,80 +39,64 @@ const CATEGORY_IMAGES = {
   "Herbal Products": "/categroy/herbal-products.png",
 };
 export default async function HomePage() {
-  const { categories, featured } = await getData();
+  const { categories, bestSelling } = await getData();
 
   return (
     <>
       <Navbar />
 
+      <HeroSlider />
 
+      {/* Categories */}
+      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
+        <div className="mb-8 text-center">
+          <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+            Shop by Category
+          </h2>
+        </div>
 
+        {categories.length === 0 ? (
+          <p className="text-center text-muted">
+            Categories will appear here once added from the admin panel.
+          </p>
+        ) : (
+          <div className="flex justify-center gap-4 overflow-x-auto px-1 pb-4 scrollbar-hide md:gap-6">
+            {categories.map((cat) => (
+              <Link
+                key={cat._id}
+                href={`/products?category=${cat._id}`}
+                className="group flex flex-shrink-0 flex-col items-center"
+              >
+                <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
+                  <Image
+                    src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
+                    alt={cat.name}
+                    fill
+                    sizes="(max-width:768px) 80px, 112px"
+                    className="object-cover"
+                  />
+                </div>
 
-     {/* Categories */}
-<section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
-  <div className="mb-8 text-center">
-
-    <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
-      Shop by Category
-    </h2>
-  </div>
-
-  {categories.length === 0 ? (
-    <p className="text-center text-muted">
-      Categories will appear here once added from the admin panel.
-    </p>
-  ) : (
-    <div className="grid grid-cols-4 gap-4 md:grid-cols-6 md:gap-6">
-      {categories.slice(0, 3).map((cat) => (
-        <Link
-          key={cat._id}
-          href={`/products?category=${cat._id}`}
-          className="group flex flex-col items-center"
-        >
-          <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
-            <Image
-              src={CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-              alt={cat.name}
-              fill
-              sizes="(max-width:768px) 80px, 112px"
-              className="object-cover"
-            />
+                <h3 className="mt-2 w-20 text-center text-xs font-medium text-gray-800 transition group-hover:text-green-700 md:w-28 md:text-sm">
+                  {cat.name}
+                </h3>
+              </Link>
+            ))}
           </div>
+        )}
+      </section>
 
-          <h3 className="mt-2 text-center text-xs font-medium text-gray-800 transition group-hover:text-green-700 md:text-sm">
-            {cat.name}
-          </h3>
-        </Link>
-      ))}
-
-      {/* View All */}
-<Link
-  href="/products"
-  className="group flex flex-col items-center justify-center"
->
-  <ArrowRight className="h-10 w-10 text-green-700 transition-transform duration-300 group-hover:translate-x-2" />
-
-  <span className="mt-2 text-sm font-semibold text-green-700 group-hover:underline">
-    View All
-  </span>
-</Link>
-    </div>
-  )}
-</section>
-     <HeroSlider/>
-
-
-      {/* Featured products */}
-      {featured.length > 0 && (
+      {/* Best Selling products */}
+      {bestSelling.length > 0 && (
         <section className="bg-champagne/50 py-16">
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="mb-10 flex items-end justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
-                  Handpicked
+                  Customer Favorites
                 </p>
                 <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
-                  Featured Products
+                  Best Selling Products
                 </h2>
               </div>
               <Link href="/products" className="hidden text-sm font-semibold text-forest hover:underline md:block">
@@ -120,9 +104,20 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-              {featured.map((p) => (
+              {bestSelling.map((p) => (
                 <ProductCard key={p._id} product={p} />
               ))}
+            </div>
+
+            {/* Shop Now CTA */}
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3 text-sm font-semibold text-white transition hover:bg-forest/90"
+              >
+                Shop Now
+                <span aria-hidden="true">&rarr;</span>
+              </Link>
             </div>
           </div>
         </section>

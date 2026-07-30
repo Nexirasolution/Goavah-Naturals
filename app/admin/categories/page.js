@@ -8,8 +8,7 @@ const EMPTY_FORM = {
   name: "",
   description: "",
   icon: "leaf",
-  image: null,
-  imageUrl: "",
+  image: [],
   isActive: true,
   sortOrder: 0,
 };
@@ -44,30 +43,39 @@ export default function AdminCategoriesPage() {
   }
 
   function openEdit(c) {
-  setEditingId(c._id);
+    setEditingId(c._id);
 
-  setForm({
-    name: c.name,
-    description: c.description || "",
-    icon: c.icon || "leaf",
-    image: c.image?.url ? [c.image] : [],
-    isActive: c.isActive,
-    sortOrder: c.sortOrder || 0,
-  });
+    setForm({
+      name: c.name,
+      description: c.description || "",
+      icon: c.icon || "leaf",
+      image: c.image?.url ? [c.image] : [],
+      isActive: c.isActive,
+      sortOrder: c.sortOrder || 0,
+    });
 
-  setError("");
-  setModalOpen(true);
-}
+    setError("");
+    setModalOpen(true);
+  }
 
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
     setError("");
     try {
+      const payload = {
+        name: form.name,
+        description: form.description,
+        icon: form.icon,
+        isActive: form.isActive,
+        sortOrder: Number(form.sortOrder),
+        image: form.image[0] ? { url: form.image[0].url, publicId: form.image[0].publicId } : { url: "", publicId: "" },
+      };
+
       const res = await fetch(editingId ? `/api/categories/${editingId}` : "/api/categories", {
         method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sortOrder: Number(form.sortOrder) }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save category.");
@@ -103,87 +111,87 @@ export default function AdminCategoriesPage() {
         </button>
       </div>
 
-<div className="mt-6 space-y-4">
-  {loading ? (
-    <p className="text-muted">Loading...</p>
-  ) : categories.length === 0 ? (
-    <div className="rounded-2xl bg-white p-8 text-center shadow-card">
-      <p className="text-muted">No categories yet.</p>
-    </div>
-  ) : (
-    categories.map((c) => {
-      const Icon = CATEGORY_ICONS[c.icon] || LeafIcon;
-
-      return (
-        <div
-          key={c._id}
-          className="rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
-        >
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-
-            {/* Left Side */}
-            <div className="flex items-center gap-4 flex-1">
-
-              <button className="hidden md:block text-gray-400 text-2xl">
-                ›
-              </button>
-
-              {c.image?.url ? (
-                <img
-                  src={c.image.url}
-                  alt={c.name}
-                  className="h-16 w-16 rounded-full object-cover border border-gray-200"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-champagne">
-                  <Icon className="h-7 w-7 text-forest" />
-                </div>
-              )}
-
-              <div className="min-w-0">
-                <h2 className="font-display text-lg md:text-xl font-bold text-ink">
-                  {c.name}
-                </h2>
-
-                <p className="text-sm text-muted">
-                  /{c.name.toLowerCase().replace(/\s+/g, "-")}
-                </p>
-
-                {c.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-muted">
-                    {c.description}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Right Side */}
-            <div className="flex items-center justify-end gap-5">
-
-              <button
-                title="Edit"
-                onClick={() => openEdit(c)}
-                className="text-forest hover:scale-110 transition"
-              >
-                ✏️
-              </button>
-
-              <button
-                title="Delete"
-                onClick={() => handleDelete(c._id)}
-                className="text-red-600 hover:scale-110 transition"
-              >
-                🗑️
-              </button>
-
-            </div>
-
+      <div className="mt-6 space-y-4">
+        {loading ? (
+          <p className="text-muted">Loading...</p>
+        ) : categories.length === 0 ? (
+          <div className="rounded-2xl bg-white p-8 text-center shadow-card">
+            <p className="text-muted">No categories yet.</p>
           </div>
-        </div>
-      );
-    })
-  )}
-</div>
+        ) : (
+          categories.map((c) => {
+            const Icon = CATEGORY_ICONS[c.icon] || LeafIcon;
+
+            return (
+              <div
+                key={c._id}
+                className="rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
+              >
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
+                  {/* Left Side */}
+                  <div className="flex items-center gap-4 flex-1">
+
+                    <button className="hidden md:block text-gray-400 text-2xl">
+                      ›
+                    </button>
+
+                    {c.image?.url ? (
+                      <img
+                        src={c.image.url}
+                        alt={c.name}
+                        className="h-16 w-16 rounded-full object-cover border border-gray-200"
+                      />
+                    ) : (
+                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-champagne">
+                        <Icon className="h-7 w-7 text-forest" />
+                      </div>
+                    )}
+
+                    <div className="min-w-0">
+                      <h2 className="font-display text-lg md:text-xl font-bold text-ink">
+                        {c.name}
+                      </h2>
+
+                      <p className="text-sm text-muted">
+                        /{c.name.toLowerCase().replace(/\s+/g, "-")}
+                      </p>
+
+                      {c.description && (
+                        <p className="mt-1 line-clamp-2 text-sm text-muted">
+                          {c.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Side */}
+                  <div className="flex items-center justify-end gap-5">
+
+                    <button
+                      title="Edit"
+                      onClick={() => openEdit(c)}
+                      className="text-forest hover:scale-110 transition"
+                    >
+                      ✏️
+                    </button>
+
+                    <button
+                      title="Delete"
+                      onClick={() => handleDelete(c._id)}
+                      className="text-red-600 hover:scale-110 transition"
+                    >
+                      🗑️
+                    </button>
+
+                  </div>
+
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? "Edit Category" : "Add Category"}>
         <form onSubmit={handleSave} className="space-y-4">
@@ -208,7 +216,17 @@ export default function AdminCategoriesPage() {
           </label>
 
           <div>
-            <span className="mb-2 block text-xs font-semibold text-ink/70">Icon</span>
+            <span className="mb-2 block text-xs font-semibold text-ink/70">Category Image</span>
+            <ImageUploader
+              images={form.image}
+              onChange={(imgs) => setForm({ ...form, image: imgs })}
+              folder="kmc-categories"
+              multiple={false}
+            />
+          </div>
+
+          <div>
+            <span className="mb-2 block text-xs font-semibold text-ink/70">Icon (fallback if no image)</span>
             <div className="flex flex-wrap gap-2">
               {ICON_OPTIONS.map((key) => {
                 const Icon = CATEGORY_ICONS[key];

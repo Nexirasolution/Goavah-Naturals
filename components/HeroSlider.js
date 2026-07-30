@@ -29,7 +29,7 @@ const slides = [
 
 export default function HeroSlider() {
   return (
-    <section className="relative h-[260px] sm:h-[350px] md:h-[500px] lg:h-[650px]">
+    <section className="relative h-[260px] sm:h-[350px] md:h-[500px] lg:h-[650px] hero-slider">
       <Swiper
         className="h-full"
         modules={[Navigation, Pagination, Autoplay]}
@@ -78,17 +78,17 @@ export default function HeroSlider() {
                     <div className="mt-6 flex flex-wrap gap-3">
                       <Link
                         href="/products"
-                        className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-pink-600 transition hover:bg-pink-100 md:px-8 md:py-3"
+                        className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-ivory transition hover:bg-forest-light md:px-8 md:py-3"
                       >
                         Shop Now
                       </Link>
 
-                      <Link
+                      {/* <Link
                         href="/track-order"
                         className="rounded-full border border-white px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white hover:text-black md:px-8 md:py-3"
                       >
                         Track Order
-                      </Link>
+                      </Link> */}
                     </div>
                   </div>
                 </div>
@@ -97,6 +97,28 @@ export default function HeroSlider() {
           </SwiperSlide>
         ))}
       </Swiper>
+
+      <style jsx global>{`
+        .hero-slider .swiper-pagination-bullet {
+          background: #ffffff;
+          opacity: 0.6;
+          width: 9px;
+          height: 9px;
+        }
+        .hero-slider .swiper-pagination-bullet-active {
+          background: #c9a227; /* gold */
+          opacity: 1;
+        }
+        .hero-slider .swiper-button-next,
+        .hero-slider .swiper-button-prev {
+          color: #c9a227; /* gold */
+        }
+        .hero-slider .swiper-button-next::after,
+        .hero-slider .swiper-button-prev::after {
+          font-size: 22px;
+          font-weight: 700;
+        }
+      `}</style>
     </section>
   );
 }
