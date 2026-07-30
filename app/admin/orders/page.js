@@ -72,7 +72,7 @@ export default function AdminOrdersPage() {
           placeholder="Search by name, phone, order #..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest md:w-72"
+          className="w-full rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest sm:w-72"
         />
       </div>
 
@@ -94,7 +94,8 @@ export default function AdminOrdersPage() {
         ))}
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-xl2 border border-gold/15 bg-white shadow-card">
+      {/* Desktop table (hidden on mobile) */}
+      <div className="mt-6 hidden overflow-x-auto rounded-xl2 border border-gold/15 bg-white shadow-card md:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gold/15 bg-champagne/50 text-xs uppercase tracking-wide text-muted">
             <tr>
@@ -139,6 +140,43 @@ export default function AdminOrdersPage() {
         </table>
       </div>
 
+      {/* Mobile card list (hidden on desktop) */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {loading ? (
+          <p className="py-8 text-center text-sm text-muted">Loading...</p>
+        ) : filtered.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted">No orders found.</p>
+        ) : (
+          filtered.map((o) => (
+            <button
+              key={o._id}
+              onClick={() => setSelected(o)}
+              className="block w-full rounded-2xl border border-gold/15 bg-white p-4 text-left shadow-card"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-ink truncate">{o.orderNumber}</p>
+                  <p className="mt-0.5 text-sm text-ink/70 truncate">{o.customer.name}</p>
+                  <p className="text-xs text-muted">{o.customer.phone}</p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium capitalize ${STATUS_COLORS[o.status]}`}
+                >
+                  {o.status}
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between border-t border-gold/10 pt-3 text-sm">
+                <span className="text-muted">
+                  {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                </span>
+                <span className="font-semibold text-forest">₹{o.total}</span>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+
       <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.orderNumber || ""} wide>
         {selected && (
           <div>
@@ -147,7 +185,7 @@ export default function AdminOrdersPage() {
                 <p className="text-xs font-semibold uppercase text-muted">Customer</p>
                 <p className="mt-1 text-sm text-ink">{selected.customer.name}</p>
                 <p className="text-sm text-ink/70">{selected.customer.phone}</p>
-                {selected.customer.email && <p className="text-sm text-ink/70">{selected.customer.email}</p>}
+                {selected.customer.email && <p className="text-sm text-ink/70 break-all">{selected.customer.email}</p>}
               </div>
               <div>
                 <p className="text-xs font-semibold uppercase text-muted">Delivery Address</p>
@@ -162,13 +200,13 @@ export default function AdminOrdersPage() {
             <p className="text-xs font-semibold uppercase text-muted">Items</p>
             <div className="mt-2 space-y-2">
               {selected.items.map((item, i) => (
-                <div key={i} className="flex justify-between text-sm">
+                <div key={i} className="flex justify-between gap-3 text-sm">
                   <span className="text-ink/80">{item.name} × {item.quantity}</span>
-                  <span className="text-ink">₹{item.price * item.quantity}</span>
+                  <span className="shrink-0 text-ink">₹{item.price * item.quantity}</span>
                 </div>
               ))}
             </div>
-            <div className="mt-3 flex justify-between border-t border-gold/15 pt-3 font-display text-sm font-bold text-forest">
+            <div className="mt-3 flex justify-between gap-3 border-t border-gold/15 pt-3 font-display text-sm font-bold text-forest">
               <span>Total ({selected.paymentMethod})</span>
               <span>₹{selected.total}</span>
             </div>
@@ -176,13 +214,13 @@ export default function AdminOrdersPage() {
             <div className="leaf-divider my-5" />
 
             <p className="mb-2 text-xs font-semibold uppercase text-muted">Update Status</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               {STATUSES.map((s) => (
                 <button
                   key={s}
                   disabled={updating || selected.status === s}
                   onClick={() => updateStatus(selected._id, s)}
-                  className={`rounded-full border px-4 py-1.5 text-xs font-semibold capitalize transition disabled:cursor-default ${
+                  className={`rounded-full border px-4 py-2 text-xs font-semibold capitalize transition disabled:cursor-default sm:py-1.5 ${
                     selected.status === s ? "border-forest bg-forest text-ivory" : "border-gold/30 text-ink/70 hover:bg-champagne"
                   }`}
                 >
