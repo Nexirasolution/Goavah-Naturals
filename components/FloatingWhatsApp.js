@@ -1,14 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { WhatsappIcon } from "./Icons"; // Your existing icon
+import { WhatsappIcon } from "./Icons";
 
-export default function FloatingWhatsApp() {
-  const whatsapp = "919876543210"; // Replace with your WhatsApp number
+export default function FloatingWhatsApp({ whatsapp }) {
   const pathname = usePathname();
 
-  // Hide on admin routes
   if (pathname?.startsWith("/admin")) return null;
+  if (!whatsapp) return null;
 
   return (
     

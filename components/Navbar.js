@@ -11,9 +11,13 @@ const LINKS = [
   { href: "/track-order", label: "Track Order" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ settings }) {
   const { count } = useCart();
   const [open, setOpen] = useState(false);
+  const storeName = settings?.storeName || "KMC Iyarkai Creation";
+  const [brand, tagline] = storeName.includes(" ")
+    ? [storeName.split(" ")[0], storeName.split(" ").slice(1).join(" ")]
+    : [storeName, ""];
 
   return (
     <header className="sticky top-0 z-40 border-b border-gold/20 bg-ivory/90 backdrop-blur-md">
@@ -21,7 +25,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/logo.jpeg"
-            alt="KMC Iyarkai Creation"
+            alt={storeName}
             width={55}
             height={55}
             priority
@@ -30,11 +34,13 @@ export default function Navbar() {
 
           <div className="leading-tight">
             <h1 className="font-display text-xl font-bold text-forest">
-              KMC
+              {brand}
             </h1>
-            <p className="text-xs uppercase tracking-[0.25em] text-muted">
-              Iyarkai Creation
-            </p>
+            {tagline && (
+              <p className="text-xs uppercase tracking-[0.25em] text-muted">
+                {tagline}
+              </p>
+            )}
           </div>
         </Link>
 
@@ -64,28 +70,28 @@ export default function Navbar() {
             )}
           </Link>
           <button
-  className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 md:hidden"
-  onClick={() => setOpen(!open)}
-  aria-label="Toggle menu"
->
-  <div className="flex flex-col justify-between h-4 w-5">
-    <span
-      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-        open ? "translate-y-[7px] rotate-45" : ""
-      }`}
-    />
-    <span
-      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-        open ? "opacity-0" : ""
-      }`}
-    />
-    <span
-      className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-        open ? "-translate-y-[7px] -rotate-45" : ""
-      }`}
-    />
-  </div>
-</button>
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 md:hidden"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            <div className="flex flex-col justify-between h-4 w-5">
+              <span
+                className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+                  open ? "translate-y-[7px] rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+                  open ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
+                  open ? "-translate-y-[7px] -rotate-45" : ""
+                }`}
+              />
+            </div>
+          </button>
         </div>
       </div>
 

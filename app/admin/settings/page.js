@@ -1,32 +1,55 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const DEFAULT_SETTINGS = {
+  storeName: "KMC Iyarkai Creation",
+  email: "admin@kmcorganicfarm.com",
+  phone: "",
+  whatsapp: "",
+  address: "",
+  shippingFee: "49",
+  freeShipping: "999",
+  deliveryTime: "2-4 Days",
+  instagram: "",
+  facebook: "",
+  youtube: "",
+  seoTitle: "KMC Iyarkai Creation",
+  seoDescription: "",
+  maintenanceMode: false,
+};
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
-    storeName: "KMC Iyarkai Cretion",
-    email: "admin@kmcorganicfarm.com",
-    phone: "",
-    whatsapp: "",
-    address: "",
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-    shippingFee: "49",
-    freeShipping: "999",
-    deliveryTime: "2-4 Days",
+  async function loadSettings() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+      if (data.settings) {
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...data.settings,
+          shippingFee: String(data.settings.shippingFee ?? "49"),
+          freeShipping: String(data.settings.freeShipping ?? "999"),
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load settings", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-    instagram: "",
-    facebook: "",
-    youtube: "",
-
-    seoTitle: "KMC Iyarkai Creation",
-    seoDescription: "",
-
-    maintenanceMode: false,
-  });
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
     setSettings((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -34,40 +57,38 @@ export default function SettingsPage() {
   };
 
   const handleReset = () => {
-    setSettings({
-      storeName: "KMC Iyarkai Creation",
-      email: "admin@kmcorganicfarm.com",
-      phone: "",
-      whatsapp: "",
-      address: "",
-
-      shippingFee: "49",
-      freeShipping: "999",
-      deliveryTime: "2-4 Days",
-
-      instagram: "",
-      facebook: "",
-      youtube: "",
-
-      seoTitle: "KMC Iyarkai Creation",
-      seoDescription: "",
-
-      maintenanceMode: false,
-    });
+    setSettings(DEFAULT_SETTINGS);
   };
 
-  const saveSettings = () => {
-    console.log(settings);
-
-    // TODO:
-    // await fetch("/api/settings", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(settings),
-    // });
-
-    alert("Settings Saved Successfully!");
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...settings,
+          shippingFee: Number(settings.shippingFee),
+          freeShipping: Number(settings.freeShipping),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save settings.");
+      alert("Settings Saved Successfully!");
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F8F7F2] p-5 md:p-8">
+        <p className="text-muted">Loading settings...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8F7F2] p-5 md:p-8">
@@ -81,12 +102,8 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            {/* Store Name */}
             <div className="md:col-span-2">
-              <label className="font-semibold block mb-2">
-                Store Name
-              </label>
-
+              <label className="font-semibold block mb-2">Store Name</label>
               <input
                 type="text"
                 name="storeName"
@@ -96,12 +113,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Email */}
             <div>
-              <label className="font-semibold block mb-2">
-                Email
-              </label>
-
+              <label className="font-semibold block mb-2">Email</label>
               <input
                 type="email"
                 name="email"
@@ -111,12 +124,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Phone */}
             <div>
-              <label className="font-semibold block mb-2">
-                Phone Number
-              </label>
-
+              <label className="font-semibold block mb-2">Phone Number</label>
               <input
                 type="text"
                 name="phone"
@@ -126,27 +135,20 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* WhatsApp */}
             <div>
-              <label className="font-semibold block mb-2">
-                WhatsApp Number
-              </label>
-
+              <label className="font-semibold block mb-2">WhatsApp Number</label>
               <input
                 type="text"
                 name="whatsapp"
                 value={settings.whatsapp}
                 onChange={handleChange}
+                placeholder="919876543210"
                 className="w-full border rounded-xl px-4 py-3"
               />
             </div>
 
-            {/* Delivery */}
             <div>
-              <label className="font-semibold block mb-2">
-                Delivery Time
-              </label>
-
+              <label className="font-semibold block mb-2">Delivery Time</label>
               <input
                 type="text"
                 name="deliveryTime"
@@ -156,12 +158,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Address */}
             <div className="md:col-span-2">
-              <label className="font-semibold block mb-2">
-                Address
-              </label>
-
+              <label className="font-semibold block mb-2">Address</label>
               <textarea
                 rows={3}
                 name="address"
@@ -171,12 +169,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Shipping */}
             <div>
-              <label className="font-semibold block mb-2">
-                Shipping Fee (₹)
-              </label>
-
+              <label className="font-semibold block mb-2">Shipping Fee (₹)</label>
               <input
                 type="number"
                 name="shippingFee"
@@ -186,12 +180,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Free Shipping */}
             <div>
-              <label className="font-semibold block mb-2">
-                Free Shipping Above (₹)
-              </label>
-
+              <label className="font-semibold block mb-2">Free Shipping Above (₹)</label>
               <input
                 type="number"
                 name="freeShipping"
@@ -201,12 +191,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Instagram */}
             <div>
-              <label className="font-semibold block mb-2">
-                Instagram
-              </label>
-
+              <label className="font-semibold block mb-2">Instagram</label>
               <input
                 type="url"
                 name="instagram"
@@ -216,12 +202,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Facebook */}
             <div>
-              <label className="font-semibold block mb-2">
-                Facebook
-              </label>
-
+              <label className="font-semibold block mb-2">Facebook</label>
               <input
                 type="url"
                 name="facebook"
@@ -231,12 +213,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* YouTube */}
             <div className="md:col-span-2">
-              <label className="font-semibold block mb-2">
-                YouTube
-              </label>
-
+              <label className="font-semibold block mb-2">YouTube</label>
               <input
                 type="url"
                 name="youtube"
@@ -246,12 +224,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* SEO Title */}
             <div className="md:col-span-2">
-              <label className="font-semibold block mb-2">
-                SEO Title
-              </label>
-
+              <label className="font-semibold block mb-2">SEO Title</label>
               <input
                 type="text"
                 name="seoTitle"
@@ -261,12 +235,8 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* SEO Description */}
             <div className="md:col-span-2">
-              <label className="font-semibold block mb-2">
-                SEO Description
-              </label>
-
+              <label className="font-semibold block mb-2">SEO Description</label>
               <textarea
                 rows={4}
                 name="seoDescription"
@@ -276,7 +246,6 @@ export default function SettingsPage() {
               />
             </div>
 
-            {/* Maintenance */}
             <div className="md:col-span-2 flex items-center gap-3">
               <input
                 type="checkbox"
@@ -285,22 +254,18 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 className="h-5 w-5"
               />
-
-              <label className="font-semibold">
-                Enable Maintenance Mode
-              </label>
+              <label className="font-semibold">Enable Maintenance Mode</label>
             </div>
 
           </div>
 
-          {/* Buttons */}
           <div className="mt-10 flex flex-wrap gap-4">
-
             <button
               onClick={saveSettings}
-              className="rounded-xl bg-green-700 px-8 py-3 font-semibold text-white transition hover:bg-green-800"
+              disabled={saving}
+              className="rounded-xl bg-green-700 px-8 py-3 font-semibold text-white transition hover:bg-green-800 disabled:opacity-60"
             >
-              Save Settings
+              {saving ? "Saving..." : "Save Settings"}
             </button>
 
             <button
@@ -309,7 +274,6 @@ export default function SettingsPage() {
             >
               Reset
             </button>
-
           </div>
 
         </div>

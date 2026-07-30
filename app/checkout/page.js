@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Script from "next/script";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
-
-const SHIPPING_FEE = 0; // Free shipping — adjust in admin logic if needed
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, hydrated } = useCart();
@@ -24,23 +23,40 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [placedOrder, setPlacedOrder] = useState(null);
+  const [settings, setSettings] = useState({ shippingFee: 49, freeShipping: 999, storeName: "KMC Iyarkai Creation" });
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.settings) setSettings(data.settings);
+      })
+      .catch(() => {});
+  }, []);
+
+  const shippingFee = subtotal >= Number(settings.freeShipping) ? 0 : Number(settings.shippingFee);
+  const total = subtotal + shippingFee;
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-
+  function validate() {
     if (items.length === 0) {
       setError("Your cart is empty.");
-      return;
+      return false;
     }
     if (!/^\d{10}$/.test(form.phone.replace(/\D/g, "").slice(-10))) {
       setError("Enter a valid 10-digit phone number.");
-      return;
+      return false;
     }
+    return true;
+  }
+
+  async function handleCOD(e) {
+    e.preventDefault();
+    setError("");
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -50,8 +66,8 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           customer: form,
           items,
-          paymentMethod,
-          shippingFee: SHIPPING_FEE,
+          paymentMethod: "COD",
+          shippingFee,
         }),
       });
       const data = await res.json();
@@ -63,6 +79,93 @@ export default function CheckoutPage() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRazorpay(e) {
+    e.preventDefault();
+    setError("");
+    if (!validate()) return;
+
+    if (!window.Razorpay) {
+      setError("Payment gateway not loaded yet. Please try again.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const orderRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: total }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) throw new Error(orderData.error || "Failed to start payment.");
+
+      const rzpOrder = orderData.order;
+
+      const rzp = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        name: settings.storeName || "KMC Iyarkai Creation",
+        description: "Order Payment",
+        order_id: rzpOrder.id,
+        prefill: {
+          name: form.name,
+          contact: form.phone,
+          email: form.email,
+        },
+        theme: { color: "#1f3d2b" }, // forest color
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                customer: form,
+                items,
+                shippingFee,
+              }),
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok) throw new Error(verifyData.error || "Payment verification failed.");
+
+            setPlacedOrder(verifyData.order);
+            clearCart();
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      });
+
+      rzp.on("payment.failed", function (response) {
+        setError("Payment failed. Please try again.");
+        setLoading(false);
+      });
+
+      rzp.open();
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  }
+
+  function handleSubmit(e) {
+    if (paymentMethod === "COD") {
+      handleCOD(e);
+    } else {
+      handleRazorpay(e);
     }
   }
 
@@ -78,21 +181,21 @@ export default function CheckoutPage() {
           </span>
           <h1 className="mt-6 font-display text-3xl font-bold text-forest">Order Placed!</h1>
           <p className="mt-3 text-muted">
-            Thank you for choosing KMC Iyarkai Creation. Your order number is:
+            Thank you for choosing {settings.storeName || "KMC Iyarkai Creation"}. Your order number is:
           </p>
           <p className="mt-2 font-display text-xl font-bold text-terracotta">{placedOrder.orderNumber}</p>
           <p className="mt-4 text-sm text-muted">
             Save this number, or use your phone number, to track your order anytime.
           </p>
           <div className="mt-8 flex justify-center gap-4">
-            <a
-              href="/track-order"
+            
+            <a  href="/track-order"
               className="rounded-full border border-forest/30 px-8 py-3 text-sm font-semibold text-forest hover:bg-champagne"
             >
               Track Order
             </a>
-            <a
-              href="/products"
+            
+             <a href="/products"
               className="rounded-full bg-forest px-8 py-3 text-sm font-semibold text-ivory shadow-soft hover:bg-forest-light"
             >
               Continue Shopping
@@ -106,6 +209,7 @@ export default function CheckoutPage() {
 
   return (
     <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Navbar />
       <section className="mx-auto max-w-4xl px-5 py-12 md:px-8">
         <h1 className="font-display text-3xl font-bold text-forest">Checkout</h1>
@@ -145,6 +249,11 @@ export default function CheckoutPage() {
                     </button>
                   ))}
                 </div>
+                {paymentMethod !== "COD" && (
+                  <p className="mt-2 text-xs text-muted">
+                    You'll be redirected to Razorpay's secure checkout to complete payment.
+                  </p>
+                )}
               </div>
 
               {error && <p className="text-sm text-terracotta">{error}</p>}
@@ -167,18 +276,18 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-sm text-ink/80">
                 <span>Shipping</span>
-                <span>{SHIPPING_FEE === 0 ? "Free" : `₹${SHIPPING_FEE}`}</span>
+                <span>{shippingFee === 0 ? "Free" : `₹${shippingFee}`}</span>
               </div>
               <div className="mt-2 flex justify-between font-display text-base font-bold text-forest">
                 <span>Total</span>
-                <span>₹{subtotal + SHIPPING_FEE}</span>
+                <span>₹{total}</span>
               </div>
               <button
                 type="submit"
                 disabled={loading}
                 className="mt-6 w-full rounded-full bg-forest px-8 py-3.5 text-sm font-semibold text-ivory shadow-soft transition hover:bg-forest-light disabled:opacity-60"
               >
-                {loading ? "Placing Order..." : "Place Order"}
+                {loading ? "Processing..." : paymentMethod === "COD" ? "Place Order" : "Pay & Place Order"}
               </button>
             </div>
           </form>
