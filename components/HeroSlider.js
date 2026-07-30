@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -9,25 +10,25 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const slides = [
-  {
-    image: "/images/banner2.png",
-    title: "Eco Friendly Products",
-    subtitle: "Natural, sustainable and artisan-made creations.",
-  },
-  {
-    image: "/images/banner3.png",
-    title: "Traditional Craftsmanship",
-    subtitle: "Supporting local artisans across India.",
-  },
-  {
-    image: "/images/banner4.png",
-    title: "Exclusive Handmade Bags",
-    subtitle: "Elegant woven bags for every occasion.",
-  },
-];
-
 export default function HeroSlider() {
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/banners?activeOnly=true")
+      .then((r) => r.json())
+      .then((data) => setSlides(data.banners || []))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="relative h-[260px] sm:h-[350px] md:h-[500px] lg:h-[650px] bg-champagne animate-pulse" />
+    );
+  }
+
+  if (!slides.length) return null;
+
   return (
     <section className="relative h-[260px] sm:h-[350px] md:h-[500px] lg:h-[650px] hero-slider">
       <Swiper
@@ -46,19 +47,23 @@ export default function HeroSlider() {
           delay: 5000,
           disableOnInteraction: false,
         }}
-        loop
+        loop={slides.length > 1}
       >
         {slides.map((slide, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={slide._id || index}>
             <div className="relative h-full w-full">
-              <Image
-                src={slide.image}
-                alt={slide.title}
-                fill
-                priority={index === 0}
-                sizes="100vw"
-                className="object-cover"
-              />
+              {slide.image?.url ? (
+                <Image
+                  src={slide.image.url}
+                  alt={slide.title}
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="h-full w-full bg-champagne" />
+              )}
 
               {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
@@ -71,25 +76,22 @@ export default function HeroSlider() {
                       {slide.title}
                     </h1>
 
-                    <p className="mt-3 text-sm text-white/90 sm:text-base md:text-lg">
-                      {slide.subtitle}
-                    </p>
+                    {slide.subtitle && (
+                      <p className="mt-3 text-sm text-white/90 sm:text-base md:text-lg">
+                        {slide.subtitle}
+                      </p>
+                    )}
 
-                    <div className="mt-6 flex flex-wrap gap-3">
-                      <Link
-                        href="/products"
-                        className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-ivory transition hover:bg-forest-light md:px-8 md:py-3"
-                      >
-                        Shop Now
-                      </Link>
-
-                      {/* <Link
-                        href="/track-order"
-                        className="rounded-full border border-white px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white hover:text-black md:px-8 md:py-3"
-                      >
-                        Track Order
-                      </Link> */}
-                    </div>
+                    {slide.ctaText && (
+                      <div className="mt-6 flex flex-wrap gap-3">
+                        <Link
+                          href={slide.ctaLink || "/products"}
+                          className="rounded-full bg-forest px-5 py-2.5 text-sm font-semibold text-ivory transition hover:bg-forest-light md:px-8 md:py-3"
+                        >
+                          {slide.ctaText}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
