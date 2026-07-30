@@ -13,56 +13,89 @@ export default function MediaUploader({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
- 
-async function handleFiles(e) {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+  async function handleFiles(e) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  setUploading(true);
-  setError("");
+    setUploading(true);
+    setError("");
 
-  try {
-    const uploaded = [];
+    try {
+      const uploaded = [];
 
-    for (const file of files) {
-      const formData = new FormData();
+      for (const file of files) {
+        const mediaType = file.type.startsWith("video/") ? "video" : "image";
 
-      formData.append("file", file);
-      formData.append("folder", folder);
-      formData.append(
-        "mediaType",
-        file.type.startsWith("video/") ? "video" : "image"
-      );
+        // 1. Ask our server for a signed upload (tiny JSON request, no size limit)
+        const sigRes = await fetch("/api/upload-signature", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ folder }),
+        });
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+        const sigText = await sigRes.text();
+        let sigData;
+        try {
+          sigData = JSON.parse(sigText);
+        } catch {
+          throw new Error(
+            `Could not get upload permission (server said: "${sigText.slice(0, 100)}")`
+          );
+        }
+        if (!sigRes.ok) {
+          throw new Error(sigData.error || "Signature request failed");
+        }
 
-      const data = await res.json();
+        const { signature, timestamp, apiKey, cloudName, folder: signedFolder } = sigData;
 
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
+        if (!apiKey || !cloudName) {
+          throw new Error("Cloudinary is not configured correctly on the server.");
+        }
+
+        // 2. Upload the file directly to Cloudinary from the browser
+        const cloudForm = new FormData();
+        cloudForm.append("file", file);
+        cloudForm.append("api_key", apiKey);
+        cloudForm.append("timestamp", timestamp);
+        cloudForm.append("signature", signature);
+        cloudForm.append("folder", signedFolder);
+
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/${mediaType}/upload`,
+          { method: "POST", body: cloudForm }
+        );
+
+        const uploadText = await uploadRes.text();
+        let uploadData;
+        try {
+          uploadData = JSON.parse(uploadText);
+        } catch {
+          throw new Error(
+            `Upload failed (Cloudinary said: "${uploadText.slice(0, 150)}")`
+          );
+        }
+
+        if (!uploadRes.ok) {
+          throw new Error(uploadData.error?.message || "Upload failed");
+        }
+
+        uploaded.push({
+          url: uploadData.secure_url,
+          publicId: uploadData.public_id,
+          mediaType,
+        });
       }
 
-      uploaded.push({
-        url: data.url,
-        publicId: data.publicId,
-        mediaType: data.mediaType,
-      });
-    }
-
-    onChange(multiple ? [...media, ...uploaded] : uploaded);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setUploading(false);
-
-    if (inputRef.current) {
-      inputRef.current.value = "";
+      onChange(multiple ? [...media, ...uploaded] : uploaded);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
     }
   }
-}
 
   function removeMedia(index) {
     onChange(media.filter((_, i) => i !== index));
@@ -76,24 +109,24 @@ async function handleFiles(e) {
             key={item.publicId || index}
             className="relative h-24 w-24 overflow-hidden rounded-lg border"
           >
-  {item.mediaType === "video" ? (
-  <video
-    src={item.url}
-    className="h-full w-full object-cover"
-    controls
-  />
-) : item.url ? (
-  <Image
-    src={item.url}
-    alt="Product image"
-    fill
-    className="object-cover"
-  />
-) : (
-  <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
-    No image
-  </div>
-)}
+            {item.mediaType === "video" ? (
+              <video
+                src={item.url}
+                className="h-full w-full object-cover"
+                controls
+              />
+            ) : item.url ? (
+              <Image
+                src={item.url}
+                alt="Product image"
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+                No image
+              </div>
+            )}
 
             <button
               type="button"
@@ -123,11 +156,7 @@ async function handleFiles(e) {
         className="hidden"
       />
 
-      {error && (
-        <p className="mt-2 text-sm text-red-500">
-          {error}
-        </p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
     </div>
   );
 }
