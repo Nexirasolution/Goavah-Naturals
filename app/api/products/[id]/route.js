@@ -4,6 +4,15 @@ import Product from "@/models/Product";
 import "@/models/Category";
 import { deleteMediaFromCloudinary } from "@/lib/cloudinary";
 
+function normalizeMedia(media) {
+  if (!Array.isArray(media)) return undefined;
+  return media.map((item) => ({
+    url: item.url,
+    publicId: item.publicId,
+    type: item.type || item.mediaType || "image",
+  }));
+}
+
 export async function GET(req, { params }) {
   try {
     await connectDB();
@@ -25,6 +34,10 @@ export async function PUT(req, { params }) {
     const { id } = await params;
     const body = await req.json();
 
+    if (body.media) {
+      body.media = normalizeMedia(body.media);
+    }
+
     const product = await Product.findByIdAndUpdate(id, body, { new: true, runValidators: true });
     if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
 
@@ -38,61 +51,32 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
-
     const { id } = await params;
-
     const product = await Product.findById(id);
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found." }, { status: 404 });
     }
 
-
-    // Delete media files
     if (product.media?.length) {
       await Promise.all(
         product.media.map((item) =>
-          deleteMediaFromCloudinary(
-            item.publicId,
-            item.type || "image"
-          )
+          deleteMediaFromCloudinary(item.publicId, item.type || "image")
         )
       );
     }
 
-
-    // Delete old image format also
     if (product.images?.length) {
       await Promise.all(
-        product.images.map((item) =>
-          deleteMediaFromCloudinary(
-            item.publicId,
-            "image"
-          )
-        )
+        product.images.map((item) => deleteMediaFromCloudinary(item.publicId, "image"))
       );
     }
-
 
     await product.deleteOne();
 
-
-    return NextResponse.json({
-      success: true
-    });
-
-
+    return NextResponse.json({ success: true });
   } catch (err) {
-
     console.error("Delete product error:", err);
-
-    return NextResponse.json(
-      { error: "Failed to delete product." },
-      { status: 500 }
-    );
-
+    return NextResponse.json({ error: "Failed to delete product." }, { status: 500 });
   }
 }

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductDetailActions from "@/components/ProductDetailActions";
 import { LeafIcon } from "@/components/Icons";
+import ProductGallery from "@/components/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -21,22 +22,20 @@ export default async function ProductDetailPage({ params }) {
   const product = await getProduct(id);
   if (!product) notFound();
 
-  const image = product.images?.[0]?.url;
+  const media = product.media || [];
 
   return (
     <>
       <Navbar />
       <section className="mx-auto max-w-6xl px-5 py-12 md:px-8">
         <div className="grid gap-12 md:grid-cols-2">
-          <div className="aspect-square overflow-hidden rounded-xl2 bg-champagne shadow-card">
-            {image ? (
-              <Image src={image} alt={product.name} width={800} height={800} className="h-full w-full object-cover" priority />
-            ) : (
-              <div className="flex h-full items-center justify-center text-forest/30">
-                <LeafIcon className="h-16 w-16" />
-              </div>
-            )}
-          </div>
+          {media.length > 0 ? (
+            <ProductGallery media={media} productName={product.name} />
+          ) : (
+            <div className="aspect-square overflow-hidden rounded-xl2 bg-champagne shadow-card flex items-center justify-center text-forest/30">
+              <LeafIcon className="h-16 w-16" />
+            </div>
+          )}
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">

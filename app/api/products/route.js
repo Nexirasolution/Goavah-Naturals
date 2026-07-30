@@ -13,6 +13,15 @@ function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizeMedia(media) {
+  if (!Array.isArray(media)) return [];
+  return media.map((item) => ({
+    url: item.url,
+    publicId: item.publicId,
+    type: item.type || item.mediaType || "image",
+  }));
+}
+
 export async function GET(req) {
   try {
     await connectDB();
@@ -53,7 +62,12 @@ export async function POST(req) {
     const existing = await Product.findOne({ slug });
     if (existing) slug = `${slug}-${Date.now().toString().slice(-5)}`;
 
-    const product = await Product.create({ ...body, slug });
+    const product = await Product.create({
+      ...body,
+      slug,
+      media: normalizeMedia(body.media),
+    });
+
     return NextResponse.json({ product }, { status: 201 });
   } catch (err) {
     console.error(err);
