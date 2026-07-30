@@ -13,8 +13,8 @@ async function isValidToken(token) {
   }
 }
 
-export async function middleware(req) {
-  const { pathname } = req.nextUrl;
+export default async function proxy(req) {
+    const { pathname } = req.nextUrl;
 
   const isAdminRoute = pathname.startsWith("/admin") && pathname !== "/admin/login";
   const isAdminApiRoute =

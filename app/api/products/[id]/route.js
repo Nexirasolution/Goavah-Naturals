@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import "@/models/Category";
-import { deleteImageFromCloudinary } from "@/lib/cloudinary";
+import { deleteMediaFromCloudinary } from "@/lib/cloudinary";
 
 export async function GET(req, { params }) {
   try {
@@ -38,17 +38,61 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
-    const { id } = await params;
-    const product = await Product.findById(id);
-    if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
 
-    for (const img of product.images) {
-      await deleteImageFromCloudinary(img.publicId);
+    const { id } = await params;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return NextResponse.json(
+        { error: "Product not found." },
+        { status: 404 }
+      );
     }
+
+
+    // Delete media files
+    if (product.media?.length) {
+      await Promise.all(
+        product.media.map((item) =>
+          deleteMediaFromCloudinary(
+            item.publicId,
+            item.type || "image"
+          )
+        )
+      );
+    }
+
+
+    // Delete old image format also
+    if (product.images?.length) {
+      await Promise.all(
+        product.images.map((item) =>
+          deleteMediaFromCloudinary(
+            item.publicId,
+            "image"
+          )
+        )
+      );
+    }
+
+
     await product.deleteOne();
 
-    return NextResponse.json({ success: true });
+
+    return NextResponse.json({
+      success: true
+    });
+
+
   } catch (err) {
-    return NextResponse.json({ error: "Failed to delete product." }, { status: 500 });
+
+    console.error("Delete product error:", err);
+
+    return NextResponse.json(
+      { error: "Failed to delete product." },
+      { status: 500 }
+    );
+
   }
 }

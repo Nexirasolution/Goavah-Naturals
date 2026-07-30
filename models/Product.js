@@ -1,9 +1,20 @@
 import mongoose from "mongoose";
 
-const ImageSchema = new mongoose.Schema(
+const MediaSchema = new mongoose.Schema(
   {
-    url: { type: String, required: true },
-    publicId: { type: String, required: true },
+    url: {
+      type: String,
+      required: true,
+    },
+    publicId: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["image", "video"],
+      default: "image",
+    },
   },
   { _id: false }
 );
@@ -14,17 +25,29 @@ const ProductSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
     description: { type: String, default: "" },
     shortDescription: { type: String, default: "" },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     price: { type: Number, required: true },
     compareAtPrice: { type: Number, default: 0 },
-    unit: { type: String, default: "piece" }, // e.g. "500 ml", "1 kg", "piece"
-    images: { type: [ImageSchema], default: [] },
+    unit: { type: String, default: "piece" },
+
+    // Images + Videos
+    media: {
+      type: [MediaSchema],
+      default: [],
+    },
+
     stock: { type: Number, default: 0 },
     lowStockThreshold: { type: Number, default: 5 },
     sku: { type: String, default: "" },
     tags: { type: [String], default: [] },
+
     isFeatured: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
+
     attributes: {
       handmade: { type: Boolean, default: true },
       natural: { type: Boolean, default: true },
@@ -34,6 +57,11 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-ProductSchema.index({ name: "text", description: "text", tags: "text" });
+ProductSchema.index({
+  name: "text",
+  description: "text",
+  tags: "text",
+});
 
-export default mongoose.models.Product || mongoose.model("Product", ProductSchema);
+export default mongoose.models.Product ||
+  mongoose.model("Product", ProductSchema);

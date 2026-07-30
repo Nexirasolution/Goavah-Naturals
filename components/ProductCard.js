@@ -7,25 +7,42 @@ import { BagIcon, LeafIcon } from "./Icons";
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
-  const image = product.images?.[0]?.url;
+  const media =
+  product.media?.[0] || product.images?.[0];
+
+const image = media?.url;
+
+const mediaType =
+  media?.type || media?.mediaType || "image";
   const outOfStock = product.stock <= 0;
 
   return (
     <div className="card-hover group relative flex flex-col overflow-hidden rounded-xl2 border border-gold/15 bg-white shadow-card">
       <Link href={`/products/${product.slug}`} className="relative block aspect-square overflow-hidden bg-champagne">
-        {image ? (
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-forest/30">
-            <LeafIcon className="h-12 w-12" />
-          </div>
-        )}
+{image ? (
+  mediaType === "video" ? (
+    <video
+      src={image}
+      muted
+      autoPlay
+      loop
+      playsInline
+      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+    />
+  ) : (
+    <Image
+      src={image}
+      alt={product.name}
+      fill
+      sizes="(max-width: 768px) 50vw, 25vw"
+      className="object-cover transition duration-500 group-hover:scale-105"
+    />
+  )
+) : (
+  <div className="flex h-full items-center justify-center text-forest/30">
+    <LeafIcon className="h-12 w-12" />
+  </div>
+)}
         {outOfStock && (
           <span className="absolute left-3 top-3 rounded-full bg-ink/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-ivory">
             Out of Stock

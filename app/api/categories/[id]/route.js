@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Product from "@/models/Product";
-import { deleteImageFromCloudinary } from "@/lib/cloudinary";
+import { deleteMediaFromCloudinary } from "@/lib/cloudinary";
 
 export async function GET(req, { params }) {
   try {

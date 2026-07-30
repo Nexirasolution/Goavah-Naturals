@@ -1,18 +1,71 @@
 import { NextResponse } from "next/server";
-import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import cloudinary from "@/lib/cloudinary";
 
 export async function POST(req) {
   try {
-    const { image, folder } = await req.json();
+    const formData = await req.formData();
 
-    if (!image) {
-      return NextResponse.json({ error: "No image provided." }, { status: 400 });
+    const file = formData.get("file");
+    const folder = formData.get("folder") || "kmc-products";
+
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file uploaded" },
+        { status: 400 }
+      );
     }
 
-    const result = await uploadImageToCloudinary(image, folder || "kmc-products");
-    return NextResponse.json(result);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Image upload failed." }, { status: 500 });
+    // Auto detect file type
+    const mediaType = file.type.startsWith("video/")
+      ? "video"
+      : "image";
+
+    console.log("Uploading:", file.name);
+    console.log("Type:", mediaType);
+    console.log("Folder:", folder);
+
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+
+    const uploadResult = await new Promise((resolve, reject) => {
+
+      cloudinary.uploader.upload_stream(
+        {
+          folder,
+          resource_type: mediaType,
+        },
+
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+
+      ).end(buffer);
+
+    });
+
+
+    return NextResponse.json({
+      success: true,
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id,
+      mediaType,
+    });
+
+
+  } catch (error) {
+
+    console.error("Upload error:", error);
+
+    return NextResponse.json(
+      { error: error.message || "Upload failed" },
+      { status: 500 }
+    );
+
   }
 }

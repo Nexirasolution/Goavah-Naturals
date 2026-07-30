@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Modal from "@/components/Modal";
-import ImageUploader from "@/components/ImageUploader";
+import MediaUploader from "@/components/MediaUploader";
 
 const EMPTY_FORM = {
   name: "",
@@ -16,7 +16,7 @@ const EMPTY_FORM = {
   description: "",
   isFeatured: false,
   isActive: true,
-  images: [],
+  media: [],
 };
 
 export default function AdminProductsPage() {
@@ -64,7 +64,7 @@ export default function AdminProductsPage() {
       description: p.description || "",
       isFeatured: p.isFeatured,
       isActive: p.isActive,
-      images: p.images || [],
+      media: p.media || [],
     });
     setError("");
     setModalOpen(true);
@@ -154,9 +154,22 @@ export default function AdminProductsPage() {
                 <tr key={p._id} className="border-b border-gold/10 last:border-0">
                   <td className="flex items-center gap-3 px-4 py-3">
                     <div className="h-10 w-10 overflow-hidden rounded-lg bg-champagne">
-                      {p.images?.[0]?.url && (
-                        <Image src={p.images[0].url} alt="" width={40} height={40} className="h-full w-full object-cover" />
-                      )}
+                     {p.media?.[0] &&
+                        (p.media[0].type === "video" ? (
+                          <video
+                            src={p.media[0].url}
+                            className="h-full w-full object-cover"
+                            muted
+                          />
+                        ) : (
+                          <Image
+                            src={p.media[0].url}
+                            alt=""
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                          />
+                        ))}
                     </div>
                     <span className="font-medium text-ink">{p.name}</span>
                   </td>
@@ -221,9 +234,17 @@ export default function AdminProductsPage() {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-xs font-semibold text-ink/70">Product Images</span>
-            <ImageUploader images={form.images} onChange={(imgs) => setForm({ ...form, images: imgs })} />
-          </label>
+            <span className="mb-1 block text-xs font-semibold text-ink/70">Product Images / Videos</span>
+              <MediaUploader
+                media={form.media}
+                onChange={(media) =>
+                  setForm({
+                    ...form,
+                    media,
+                  })
+                }
+              />          
+              </label>
 
           <div className="flex gap-6">
             <label className="flex items-center gap-2 text-sm">
