@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { INDIAN_STATES } from "@/lib/indianStates";
 
 const DEFAULT_SETTINGS = {
   storeName: "KMC Iyarkai Creation",
@@ -10,6 +11,7 @@ const DEFAULT_SETTINGS = {
   address: "",
   shippingFee: "49",
   freeShipping: "999",
+  stateShippingRates: [],
   deliveryTime: "2-4 Days",
   instagram: "",
   facebook: "",
@@ -35,6 +37,10 @@ export default function SettingsPage() {
           ...data.settings,
           shippingFee: String(data.settings.shippingFee ?? "49"),
           freeShipping: String(data.settings.freeShipping ?? "999"),
+          stateShippingRates: (data.settings.stateShippingRates || []).map((r) => ({
+            state: r.state,
+            fee: String(r.fee ?? "0"),
+          })),
         });
       }
     } catch (err) {
@@ -60,6 +66,30 @@ export default function SettingsPage() {
     setSettings(DEFAULT_SETTINGS);
   };
 
+  function addStateRate() {
+    const usedStates = new Set(settings.stateShippingRates.map((r) => r.state));
+    const nextState = INDIAN_STATES.find((s) => !usedStates.has(s)) || INDIAN_STATES[0];
+    setSettings((prev) => ({
+      ...prev,
+      stateShippingRates: [...prev.stateShippingRates, { state: nextState, fee: prev.shippingFee || "0" }],
+    }));
+  }
+
+  function updateStateRate(index, field, value) {
+    setSettings((prev) => {
+      const rows = [...prev.stateShippingRates];
+      rows[index] = { ...rows[index], [field]: value };
+      return { ...prev, stateShippingRates: rows };
+    });
+  }
+
+  function removeStateRate(index) {
+    setSettings((prev) => ({
+      ...prev,
+      stateShippingRates: prev.stateShippingRates.filter((_, i) => i !== index),
+    }));
+  }
+
   const saveSettings = async () => {
     setSaving(true);
     try {
@@ -70,11 +100,15 @@ export default function SettingsPage() {
           ...settings,
           shippingFee: Number(settings.shippingFee),
           freeShipping: Number(settings.freeShipping),
+          stateShippingRates: settings.stateShippingRates
+            .filter((r) => r.state)
+            .map((r) => ({ state: r.state, fee: Number(r.fee) || 0 })),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save settings.");
       alert("Settings Saved Successfully!");
+      loadSettings();
     } catch (err) {
       alert(err.message);
     } finally {
@@ -170,7 +204,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="font-semibold block mb-2">Shipping Fee (₹)</label>
+              <label className="font-semibold block mb-2">Default Shipping Fee (₹)</label>
               <input
                 type="number"
                 name="shippingFee"
@@ -178,6 +212,9 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 className="w-full border rounded-xl px-4 py-3"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Used for any state that doesn&apos;t have its own rate below.
+              </p>
             </div>
 
             <div>
@@ -189,6 +226,60 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 className="w-full border rounded-xl px-4 py-3"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                Applies store-wide, on top of any order, regardless of state.
+              </p>
+            </div>
+
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                <label className="font-semibold">Shipping Fee by State</label>
+                <button
+                  type="button"
+                  onClick={addStateRate}
+                  className="rounded-xl border border-green-700 px-4 py-1.5 text-sm font-semibold text-green-700 hover:bg-green-50"
+                >
+                  + Add State Rate
+                </button>
+              </div>
+
+              {settings.stateShippingRates.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  No state-specific rates yet — every order uses the default shipping fee above.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {settings.stateShippingRates.map((row, idx) => (
+                    <div key={idx} className="flex flex-wrap items-center gap-3">
+                      <select
+                        value={row.state}
+                        onChange={(e) => updateStateRate(idx, "state", e.target.value)}
+                        className="flex-1 min-w-[180px] border rounded-xl px-4 py-2.5"
+                      >
+                        {INDIAN_STATES.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">₹</span>
+                        <input
+                          type="number"
+                          value={row.fee}
+                          onChange={(e) => updateStateRate(idx, "fee", e.target.value)}
+                          className="w-28 border rounded-xl px-4 py-2.5"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeStateRate(idx)}
+                        className="text-sm font-semibold text-red-600 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div>

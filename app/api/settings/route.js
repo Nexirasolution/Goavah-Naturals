@@ -1,4 +1,3 @@
-// app/api/settings/route.js
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Settings from "@/models/Settings";
@@ -23,6 +22,20 @@ export async function POST(req) {
   try {
     await connectDB();
     const body = await req.json();
+
+    // Clean up state shipping rates: trim names, coerce fees, drop blank rows,
+    // and collapse duplicate states (last one wins) so lookups stay unambiguous.
+    if (Array.isArray(body.stateShippingRates)) {
+      const byState = new Map();
+      for (const row of body.stateShippingRates) {
+        const state = String(row?.state || "").trim();
+        if (!state) continue;
+        const fee = Number(row?.fee);
+        byState.set(state.toLowerCase(), { state, fee: Number.isFinite(fee) ? fee : 0 });
+      }
+      body.stateShippingRates = Array.from(byState.values());
+    }
+
     let settings = await Settings.findOne();
     if (settings) {
       Object.assign(settings, body);

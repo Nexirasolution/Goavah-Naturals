@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
+import { INDIAN_STATES } from "@/lib/indianStates";
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, hydrated } = useCart();
@@ -23,7 +24,12 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [placedOrder, setPlacedOrder] = useState(null);
-  const [settings, setSettings] = useState({ shippingFee: 49, freeShipping: 999, storeName: "KMC Iyarkai Creation" });
+  const [settings, setSettings] = useState({
+    shippingFee: 49,
+    freeShipping: 999,
+    stateShippingRates: [],
+    storeName: "KMC Iyarkai Creation",
+  });
 
   useEffect(() => {
     fetch("/api/settings")
@@ -34,7 +40,16 @@ export default function CheckoutPage() {
       .catch(() => {});
   }, []);
 
-  const shippingFee = subtotal >= Number(settings.freeShipping) ? 0 : Number(settings.shippingFee);
+  // Look up the fee for the selected state; fall back to the default fee
+  // when that state has no override configured in Settings.
+  const stateFee = useMemo(() => {
+    const match = (settings.stateShippingRates || []).find(
+      (r) => r.state?.trim().toLowerCase() === form.state?.trim().toLowerCase()
+    );
+    return match ? Number(match.fee) : Number(settings.shippingFee);
+  }, [settings, form.state]);
+
+  const shippingFee = subtotal >= Number(settings.freeShipping) ? 0 : stateFee;
   const total = subtotal + shippingFee;
 
   function update(field, value) {
@@ -227,7 +242,21 @@ export default function CheckoutPage() {
               <Field label="Delivery Address" required value={form.address} onChange={(v) => update("address", v)} textarea />
               <div className="grid gap-4 sm:grid-cols-3">
                 <Field label="City" value={form.city} onChange={(v) => update("city", v)} />
-                <Field label="State" value={form.state} onChange={(v) => update("state", v)} />
+                <label className="block">
+                  <span className="mb-1 block text-xs font-semibold text-ink/70">
+                    State <span className="text-terracotta">*</span>
+                  </span>
+                  <select
+                    required
+                    value={form.state}
+                    onChange={(e) => update("state", e.target.value)}
+                    className="w-full rounded-xl border border-gold/30 bg-white px-4 py-2.5 text-sm outline-none focus:border-forest"
+                  >
+                    {INDIAN_STATES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </label>
                 <Field label="Pincode" value={form.pincode} onChange={(v) => update("pincode", v)} />
               </div>
 
@@ -275,7 +304,7 @@ export default function CheckoutPage() {
                 <span>₹{subtotal}</span>
               </div>
               <div className="flex justify-between text-sm text-ink/80">
-                <span>Shipping</span>
+                <span>Shipping ({form.state})</span>
                 <span>{shippingFee === 0 ? "Free" : `₹${shippingFee}`}</span>
               </div>
               <div className="mt-2 flex justify-between font-display text-base font-bold text-forest">
