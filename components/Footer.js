@@ -183,3 +183,4 @@ export default function Footer({ settings }) {
     </footer>
   );
 }
+
