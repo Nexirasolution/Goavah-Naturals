@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Modal from "@/components/Modal";
 
 const STATUSES = ["pending", "confirmed", "packed", "shipped", "delivered", "cancelled"];
@@ -129,9 +130,17 @@ export default function AdminOrdersPage() {
                     {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button onClick={() => setSelected(o)} className="text-xs font-semibold text-forest hover:underline">
-                      View
-                    </button>
+                    <div className="flex justify-end gap-3">
+                      <Link
+                        href={`/admin/orders/${o._id}/label`}
+                        className="text-xs font-semibold text-terracotta hover:underline"
+                      >
+                        Print label
+                      </Link>
+                      <button onClick={() => setSelected(o)} className="text-xs font-semibold text-forest hover:underline">
+                        View
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -148,31 +157,36 @@ export default function AdminOrdersPage() {
           <p className="py-8 text-center text-sm text-muted">No orders found.</p>
         ) : (
           filtered.map((o) => (
-            <button
-              key={o._id}
-              onClick={() => setSelected(o)}
-              className="block w-full rounded-2xl border border-gold/15 bg-white p-4 text-left shadow-card"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-semibold text-ink truncate">{o.orderNumber}</p>
-                  <p className="mt-0.5 text-sm text-ink/70 truncate">{o.customer.name}</p>
-                  <p className="text-xs text-muted">{o.customer.phone}</p>
+            <div key={o._id} className="rounded-2xl border border-gold/15 bg-white p-4 shadow-card">
+              <button onClick={() => setSelected(o)} className="block w-full text-left">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-ink truncate">{o.orderNumber}</p>
+                    <p className="mt-0.5 text-sm text-ink/70 truncate">{o.customer.name}</p>
+                    <p className="text-xs text-muted">{o.customer.phone}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium capitalize ${STATUS_COLORS[o.status]}`}
+                  >
+                    {o.status}
+                  </span>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium capitalize ${STATUS_COLORS[o.status]}`}
-                >
-                  {o.status}
-                </span>
-              </div>
 
-              <div className="mt-3 flex items-center justify-between border-t border-gold/10 pt-3 text-sm">
-                <span className="text-muted">
-                  {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                </span>
-                <span className="font-semibold text-forest">₹{o.total}</span>
-              </div>
-            </button>
+                <div className="mt-3 flex items-center justify-between border-t border-gold/10 pt-3 text-sm">
+                  <span className="text-muted">
+                    {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                  </span>
+                  <span className="font-semibold text-forest">₹{o.total}</span>
+                </div>
+              </button>
+
+              <Link
+                href={`/admin/orders/${o._id}/label`}
+                className="mt-3 block w-full rounded-full border border-terracotta/40 py-2 text-center text-xs font-semibold text-terracotta"
+              >
+                Print shipping label
+              </Link>
+            </div>
           ))
         )}
       </div>
@@ -213,8 +227,16 @@ export default function AdminOrdersPage() {
 
             <div className="leaf-divider my-5" />
 
-            <p className="mb-2 text-xs font-semibold uppercase text-muted">Update Status</p>
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase text-muted">Update Status</p>
+              <Link
+                href={`/admin/orders/${selected._id}/label`}
+                className="rounded-full border border-terracotta/40 px-4 py-1.5 text-xs font-semibold text-terracotta"
+              >
+                Print shipping label
+              </Link>
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               {STATUSES.map((s) => (
                 <button
                   key={s}
