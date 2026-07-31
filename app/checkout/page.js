@@ -234,7 +234,7 @@ export default function CheckoutPage() {
               <div>
                 <p className="mb-2 text-sm font-semibold text-ink">Payment Method</p>
                 <div className="flex gap-3">
-                  {["COD", "UPI", "Online"].map((m) => (
+                  {["Online"].map((m) => (
                     <button
                       type="button"
                       key={m}
