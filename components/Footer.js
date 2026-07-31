@@ -114,6 +114,14 @@ export default function Footer({ settings }) {
               </p>
             )}
 
+            <p className="text-sm text-green-200">
+              GST No: {settings?.gst || "33CFZPA9521C1ZH"}
+            </p>
+
+            <p className="text-sm text-green-200">
+              MSME Registration: {settings?.msme || "TN-18-0098443"}
+            </p>
+
             {whatsapp && (
               <a
                 href={`https://wa.me/${whatsapp}`}
