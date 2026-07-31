@@ -45,11 +45,14 @@ export async function DELETE(req, { params }) {
     const category = await Category.findById(id);
     if (!category) return NextResponse.json({ error: "Category not found." }, { status: 404 });
 
-    if (category.image?.publicId) await deleteImageFromCloudinary(category.image.publicId);
+    if (category.image?.publicId) {
+      await deleteMediaFromCloudinary(category.image.publicId, "image");
+    }
     await category.deleteOne();
 
     return NextResponse.json({ success: true });
   } catch (err) {
+    console.error("Delete category error:", err);
     return NextResponse.json({ error: "Failed to delete category." }, { status: 500 });
   }
 }
