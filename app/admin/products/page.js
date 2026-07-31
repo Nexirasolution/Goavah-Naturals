@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Modal from "@/components/Modal";
 import MediaUploader from "@/components/MediaUploader";
+import BulkUploadModal from "@/components/BulkUploadModal";
 
 const EMPTY_FORM = {
   name: "",
@@ -24,6 +25,7 @@ export default function AdminProductsPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
@@ -121,6 +123,14 @@ export default function AdminProductsPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
           />
+          <button
+            onClick={() => setBulkOpen(true)}
+            disabled={categories.length === 0}
+            className="rounded-full border border-forest px-6 py-2 text-sm font-semibold text-forest hover:bg-forest/5 disabled:opacity-50"
+            title={categories.length === 0 ? "Add a category first" : ""}
+          >
+            Bulk Upload
+          </button>
           <button
             onClick={openAdd}
             disabled={categories.length === 0}
@@ -268,6 +278,12 @@ export default function AdminProductsPage() {
           </button>
         </form>
       </Modal>
+
+      <BulkUploadModal
+        open={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        onDone={loadData}
+      />
     </div>
   );
 }
