@@ -7,24 +7,31 @@ export default function ShippingLabelPage() {
   const { id } = useParams();
   const router = useRouter();
   const [order, setOrder] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadOrder() {
+    async function loadData() {
       setLoading(true);
       try {
-        const res = await fetch(`/api/orders/${id}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Order not found");
-        setOrder(data.order);
+        const [orderRes, settingsRes] = await Promise.all([
+          fetch(`/api/orders/${id}`),
+          fetch("/api/settings"),
+        ]);
+        const orderData = await orderRes.json();
+        if (!orderRes.ok) throw new Error(orderData.error || "Order not found");
+        setOrder(orderData.order);
+
+        const settingsData = await settingsRes.json();
+        if (settingsData.settings) setSettings(settingsData.settings);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     }
-    if (id) loadOrder();
+    if (id) loadData();
   }, [id]);
 
   if (loading) {
@@ -71,6 +78,15 @@ export default function ShippingLabelPage() {
             {order.paymentMethod}
           </span>
         </div>
+
+        {settings && (settings.storeName || settings.address || settings.phone) && (
+          <div className="mt-3 border-b border-dashed border-muted/50 pb-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted">From</p>
+            {settings.storeName && <p className="text-sm font-bold">{settings.storeName}</p>}
+            {settings.address && <p className="mt-0.5 text-xs leading-snug text-ink/80">{settings.address}</p>}
+            {settings.phone && <p className="mt-0.5 text-xs text-ink/80">Phone: {settings.phone}</p>}
+          </div>
+        )}
 
         <div className="mt-3">
           <p className="text-[10px] uppercase tracking-wide text-muted">Ship to</p>
