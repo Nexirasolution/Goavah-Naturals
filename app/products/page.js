@@ -7,6 +7,7 @@ export const metadata = { title: "Shop | KMC Iyarkai Creation" };
 export default async function ProductsPage({ searchParams }) {
   const sp = await searchParams;
   const category = sp?.category || "";
+  const search = sp?.search || "";
 
   return (
     <>
@@ -18,7 +19,7 @@ export default async function ProductsPage({ searchParams }) {
             Natural &amp; Handmade Products
           </h1>
         </div>
-        <ProductsGrid initialCategory={category} />
+        <ProductsGrid initialCategory={category} initialSearch={search} />
       </section>
       <Footer />
     </>

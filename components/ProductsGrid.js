@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "./Icons";
 
-export default function ProductsGrid({ initialCategory }) {
+export default function ProductsGrid({ initialCategory, initialSearch }) {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(initialCategory || "");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch || "");
 
   useEffect(() => {
     fetch("/api/categories?activeOnly=true")

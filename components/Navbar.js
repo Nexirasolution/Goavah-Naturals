@@ -2,8 +2,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { LeafIcon, BagIcon } from "./Icons";
+import { Search, X } from "lucide-react";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -13,11 +15,24 @@ const LINKS = [
 
 export default function Navbar({ settings }) {
   const { count } = useCart();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const storeName = settings?.storeName || "KMC Iyarkai Creation";
   const [brand, tagline] = storeName.includes(" ")
     ? [storeName.split(" ")[0], storeName.split(" ").slice(1).join(" ")]
     : [storeName, ""];
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/products?search=${encodeURIComponent(query.trim())}`);
+      setSearchOpen(false);
+      setOpen(false);
+      setQuery("");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-gold/20 bg-ivory/90 backdrop-blur-md">
@@ -57,6 +72,53 @@ export default function Navbar({ settings }) {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Desktop expanding search */}
+          <div className="hidden items-center md:flex">
+            {searchOpen ? (
+              <form
+                onSubmit={handleSearchSubmit}
+                className="flex items-center overflow-hidden rounded-full border border-gold/30 bg-white pl-4 pr-1 py-1.5 transition-all"
+              >
+                <input
+                  autoFocus
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="w-48 bg-transparent text-sm outline-none placeholder:text-gray-400"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchOpen(false);
+                    setQuery("");
+                  }}
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-ink/60 hover:bg-champagne"
+                  aria-label="Close search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+
+          {/* Mobile search toggle icon (next to cart) */}
+          <button
+            onClick={() => setSearchOpen((v) => !v)}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne md:hidden"
+            aria-label="Search"
+          >
+            {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+          </button>
+
           <Link
             href="/cart"
             className="relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne"
@@ -94,6 +156,26 @@ export default function Navbar({ settings }) {
           </button>
         </div>
       </div>
+
+      {/* Mobile search bar row (below header) */}
+      {searchOpen && (
+        <div className="border-t border-gold/20 bg-ivory px-5 py-3 md:hidden">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex items-center gap-2 rounded-full border border-gold/30 bg-white px-4 py-2.5"
+          >
+            <Search className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              autoFocus
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products..."
+              className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+            />
+          </form>
+        </div>
+      )}
 
       {open && (
         <nav className="flex flex-col gap-1 border-t border-gold/20 bg-ivory px-5 py-3 md:hidden">
