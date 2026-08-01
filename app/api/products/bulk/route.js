@@ -59,17 +59,31 @@ export async function POST(req) {
       (await Product.find({}, "slug")).map((p) => p.slug)
     );
 
+    // Existing SKUs, so duplicates are caught before hitting the DB.
+    const existingSkus = new Set(
+      (await Product.find({}, "sku")).map((p) => p.sku).filter(Boolean)
+    );
+
     const results = [];
     const toInsert = [];
 
     rows.forEach((row, idx) => {
       const rowNum = idx + 2; // header is row 1
       const name = String(row.name || "").trim();
+      const sku = String(row.sku || "").trim().toUpperCase();
       const categoryName = String(row.category || "").trim();
       const price = toNumber(row.price, NaN);
 
       if (!name) {
         results.push({ row: rowNum, status: "error", message: "Missing product name." });
+        return;
+      }
+      if (!sku) {
+        results.push({ row: rowNum, name, status: "error", message: "Missing SKU." });
+        return;
+      }
+      if (existingSkus.has(sku)) {
+        results.push({ row: rowNum, name, status: "error", message: `SKU "${sku}" is already in use.` });
         return;
       }
       if (!categoryName) {
@@ -96,10 +110,12 @@ export async function POST(req) {
         slug = `${slug}-${Date.now().toString().slice(-5)}-${idx}`;
       }
       existingSlugs.add(slug);
+      existingSkus.add(sku);
 
       toInsert.push({
         name,
         slug,
+        sku,
         category: category._id,
         price,
         compareAtPrice: toNumber(row.compareAtPrice, 0),
@@ -107,7 +123,6 @@ export async function POST(req) {
         stock: toNumber(row.stock, 0),
         lowStockThreshold: toNumber(row.lowStockThreshold, 5),
         description: String(row.description || "").trim(),
-        sku: String(row.sku || "").trim(),
         tags: String(row.tags || "")
           .split(",")
           .map((t) => t.trim())

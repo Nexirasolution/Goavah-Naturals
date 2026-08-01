@@ -8,6 +8,7 @@ import BulkUploadModal from "@/components/BulkUploadModal";
 
 const EMPTY_FORM = {
   name: "",
+  sku: "",
   category: "",
   price: "",
   compareAtPrice: "",
@@ -57,6 +58,7 @@ export default function AdminProductsPage() {
     setEditingId(p._id);
     setForm({
       name: p.name,
+      sku: p.sku || "",
       category: p.category?._id || "",
       price: p.price,
       compareAtPrice: p.compareAtPrice || "",
@@ -79,6 +81,7 @@ export default function AdminProductsPage() {
     try {
       const payload = {
         ...form,
+        sku: form.sku.trim().toUpperCase(),
         price: Number(form.price),
         compareAtPrice: Number(form.compareAtPrice) || 0,
         stock: Number(form.stock),
@@ -106,7 +109,11 @@ export default function AdminProductsPage() {
     loadData();
   }
 
-  const filtered = products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.sku?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
@@ -118,7 +125,7 @@ export default function AdminProductsPage() {
         <div className="flex gap-3">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search by name or SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
@@ -146,6 +153,7 @@ export default function AdminProductsPage() {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gold/15 bg-champagne/50 text-xs uppercase tracking-wide text-muted">
             <tr>
+              <th className="px-4 py-3">SKU</th>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Price</th>
@@ -156,12 +164,13 @@ export default function AdminProductsPage() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-muted">Loading...</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">Loading...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={6} className="px-4 py-8 text-center text-muted">No products yet. Add your first product.</td></tr>
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">No products yet. Add your first product.</td></tr>
             ) : (
               filtered.map((p) => (
                 <tr key={p._id} className="border-b border-gold/10 last:border-0">
+                  <td className="px-4 py-3 font-mono text-xs text-ink/70">{p.sku}</td>
                   <td className="flex items-center gap-3 px-4 py-3">
                     <div className="h-10 w-10 overflow-hidden rounded-lg bg-champagne">
                      {p.media?.[0] &&
@@ -210,21 +219,29 @@ export default function AdminProductsPage() {
         <form onSubmit={handleSave} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Product Name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-            <label className="block">
-              <span className="mb-1 block text-xs font-semibold text-ink/70">Category *</span>
-              <select
-                required
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full rounded-xl border border-gold/30 px-4 py-2.5 text-sm outline-none focus:border-forest"
-              >
-                <option value="">Select category</option>
-                {categories.map((c) => (
-                  <option key={c._id} value={c._id}>{c.name}</option>
-                ))}
-              </select>
-            </label>
+            <FormField
+              label="SKU"
+              required
+              value={form.sku}
+              onChange={(v) => setForm({ ...form, sku: v.toUpperCase() })}
+              placeholder="e.g. HC-OIL-001"
+            />
           </div>
+
+          <label className="block">
+            <span className="mb-1 block text-xs font-semibold text-ink/70">Category *</span>
+            <select
+              required
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              className="w-full rounded-xl border border-gold/30 px-4 py-2.5 text-sm outline-none focus:border-forest"
+            >
+              <option value="">Select category</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c._id}>{c.name}</option>
+              ))}
+            </select>
+          </label>
 
           <div className="grid gap-4 sm:grid-cols-4">
             <FormField label="Price (₹)" required type="number" value={form.price} onChange={(v) => setForm({ ...form, price: v })} />

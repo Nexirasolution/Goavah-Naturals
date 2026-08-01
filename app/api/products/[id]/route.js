@@ -38,10 +38,28 @@ export async function PUT(req, { params }) {
       body.media = normalizeMedia(body.media);
     }
 
-    const product = await Product.findByIdAndUpdate(id, body, { new: true, runValidators: true });
-    if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+    if (body.sku !== undefined) {
+      const sku = String(body.sku).trim().toUpperCase();
+      if (!sku) {
+        return NextResponse.json({ error: "SKU is required." }, { status: 400 });
+      }
+      const dupSku = await Product.findOne({ sku, _id: { $ne: id } });
+      if (dupSku) {
+        return NextResponse.json({ error: `SKU "${sku}" is already in use.` }, { status: 400 });
+      }
+      body.sku = sku;
+    }
 
-    return NextResponse.json({ product });
+    try {
+      const product = await Product.findByIdAndUpdate(id, body, { new: true, runValidators: true });
+      if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+      return NextResponse.json({ product });
+    } catch (err) {
+      if (err.code === 11000) {
+        return NextResponse.json({ error: "SKU must be unique." }, { status: 400 });
+      }
+      throw err;
+    }
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed to update product." }, { status: 500 });

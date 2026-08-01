@@ -23,6 +23,13 @@ const ProductSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    sku: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      uppercase: true,
+    },
     description: { type: String, default: "" },
     shortDescription: { type: String, default: "" },
     category: {
@@ -42,7 +49,6 @@ const ProductSchema = new mongoose.Schema(
 
     stock: { type: Number, default: 0 },
     lowStockThreshold: { type: Number, default: 5 },
-    sku: { type: String, default: "" },
     tags: { type: [String], default: [] },
 
     isFeatured: { type: Boolean, default: false },
