@@ -8,6 +8,8 @@ import Footer from "@/components/Footer";
 import ProductDetailActions from "@/components/ProductDetailActions";
 import { LeafIcon } from "@/components/Icons";
 import ProductGallery from "@/components/ProductGallery";
+import ProductAccordion from "@/components/ProductAccordion";
+import RelatedProducts from "@/components/RelatedProducts";
 
 export const dynamic = "force-dynamic";
 
@@ -17,17 +19,56 @@ async function getProduct(slug) {
   return product ? JSON.parse(JSON.stringify(product)) : null;
 }
 
+async function getRelatedProducts(product) {
+  await connectDB();
+  const related = await Product.find({
+    category: product.category?._id,
+    _id: { $ne: product._id },
+    isActive: true,
+  })
+    .populate("category", "name slug")
+    .limit(8)
+    .lean();
+  return JSON.parse(JSON.stringify(related));
+}
+
 export default async function ProductDetailPage({ params }) {
   const { id } = await params;
   const product = await getProduct(id);
   if (!product) notFound();
 
+  const related = await getRelatedProducts(product);
   const media = product.media || [];
+
+  const accordionItems = [
+    {
+      title: "Description",
+      content:
+        product.description ||
+        product.shortDescription ||
+        "A premium handcrafted product from KMC Iyarkai Creation, made with natural, eco-friendly materials.",
+    },
+    {
+      title: "Product Details",
+      content: (
+        <div className="flex flex-wrap gap-2">
+          {product.attributes?.handmade && <Tag label="Handmade with Care" />}
+          {product.attributes?.natural && <Tag label="100% Natural" />}
+          {product.attributes?.ecoFriendly && <Tag label="Eco-Friendly" />}
+        </div>
+      ),
+    },
+    {
+      title: "Availability",
+      content: product.stock > 0 ? `${product.stock} in stock` : "Currently unavailable",
+    },
+  ];
 
   return (
     <>
       <Navbar />
       <section className="mx-auto max-w-6xl px-5 py-12 md:px-8">
+        {/* Image + core info side by side */}
         <div className="grid gap-12 md:grid-cols-2">
           {media.length > 0 ? (
             <ProductGallery media={media} productName={product.name} />
@@ -51,24 +92,16 @@ export default async function ProductDetailPage({ params }) {
               <span className="text-sm text-muted">/ {product.unit}</span>
             </div>
 
-            <p className="mt-6 leading-relaxed text-ink/80">
-              {product.description || product.shortDescription || "A premium handcrafted product from KMC Iyarkai Creation, made with natural, eco-friendly materials."}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {product.attributes?.handmade && <Tag label="Handmade with Care" />}
-              {product.attributes?.natural && <Tag label="100% Natural" />}
-              {product.attributes?.ecoFriendly && <Tag label="Eco-Friendly" />}
-            </div>
-
-            <p className="mt-4 text-sm text-muted">
-              {product.stock > 0 ? `${product.stock} in stock` : "Currently unavailable"}
-            </p>
-
             <ProductDetailActions product={product} />
           </div>
         </div>
+
+        {/* Full-width description / details / availability */}
+        <ProductAccordion items={accordionItems} />
       </section>
+
+     <RelatedProducts products={related} categoryId={product.category?._id} />
+
       <Footer />
     </>
   );

@@ -4,12 +4,24 @@ import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "./Icons";
 
+const SORT_OPTIONS = [
+  { value: "", label: "Sort: Featured" },
+  { value: "newest", label: "Newest First" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+  { value: "name-asc", label: "Name: A to Z" },
+];
+
 export default function ProductsGrid({ initialCategory, initialSearch }) {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(initialCategory || "");
   const [search, setSearch] = useState(initialSearch || "");
+  const [sortBy, setSortBy] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetch("/api/categories?activeOnly=true")
@@ -22,16 +34,29 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
     const params = new URLSearchParams({ activeOnly: "true" });
     if (activeCategory) params.set("category", activeCategory);
     if (search) params.set("search", search);
+    if (sortBy) params.set("sort", sortBy);
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
 
     fetch(`/api/products?${params.toString()}`)
       .then((r) => r.json())
       .then((d) => setProducts(d.products || []))
       .finally(() => setLoading(false));
-  }, [activeCategory, search]);
+  }, [activeCategory, search, sortBy, minPrice, maxPrice]);
+
+  function clearFilters() {
+    setActiveCategory("");
+    setSearch("");
+    setSortBy("");
+    setMinPrice("");
+    setMaxPrice("");
+  }
+
+  const hasActiveFilters = activeCategory || search || sortBy || minPrice || maxPrice;
 
   return (
     <div>
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveCategory("")}
@@ -69,6 +94,65 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-full border border-gold/30 bg-white px-5 py-2.5 text-sm outline-none focus:border-forest md:w-64"
         />
+      </div>
+
+      {/* Sort + price filter row */}
+      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className="flex w-fit items-center gap-2 rounded-full border border-gold/30 px-4 py-2 text-xs font-semibold text-ink/70 hover:bg-champagne md:hidden"
+        >
+          Filters {showFilters ? "▲" : "▼"}
+        </button>
+
+        <div
+          className={`${
+            showFilters ? "flex" : "hidden"
+          } flex-col gap-3 sm:flex-row sm:items-center md:flex`}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-ink/60">₹</span>
+            <input
+              type="number"
+              min="0"
+              placeholder="Min"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="w-24 rounded-full border border-gold/30 bg-white px-3 py-2 text-sm outline-none focus:border-forest"
+            />
+            <span className="text-xs text-ink/40">to</span>
+            <input
+              type="number"
+              min="0"
+              placeholder="Max"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="w-24 rounded-full border border-gold/30 bg-white px-3 py-2 text-sm outline-none focus:border-forest"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="text-xs font-semibold text-terracotta hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-full border border-gold/30 bg-white px-4 py-2.5 text-sm outline-none focus:border-forest"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading ? (

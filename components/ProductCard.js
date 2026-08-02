@@ -7,45 +7,54 @@ import { BagIcon, LeafIcon } from "./Icons";
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
-  const media =
-  product.media?.[0] || product.images?.[0];
+  const media = product.media?.[0] || product.images?.[0];
 
-const image = media?.url;
-
-const mediaType =
-  media?.type || media?.mediaType || "image";
+  const image = media?.url;
+  const mediaType = media?.type || media?.mediaType || "image";
   const outOfStock = product.stock <= 0;
+
+  const hasDiscount = product.compareAtPrice > product.price;
+  const discountPercent = hasDiscount
+    ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
+    : 0;
 
   return (
     <div className="card-hover group relative flex flex-col overflow-hidden rounded-xl2 border border-gold/15 bg-white shadow-card">
       <Link href={`/products/${product.slug}`} className="relative block aspect-square overflow-hidden bg-champagne">
-{image ? (
-  mediaType === "video" ? (
-    <video
-      src={image}
-      muted
-      autoPlay
-      loop
-      playsInline
-      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-    />
-  ) : (
-    <Image
-      src={image}
-      alt={product.name}
-      fill
-      sizes="(max-width: 768px) 50vw, 25vw"
-      className="object-cover transition duration-500 group-hover:scale-105"
-    />
-  )
-) : (
-  <div className="flex h-full items-center justify-center text-forest/30">
-    <LeafIcon className="h-12 w-12" />
-  </div>
-)}
+        {image ? (
+          mediaType === "video" ? (
+            <video
+              src={image}
+              muted
+              autoPlay
+              loop
+              playsInline
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <Image
+              src={image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover transition duration-500 group-hover:scale-105"
+            />
+          )
+        ) : (
+          <div className="flex h-full items-center justify-center text-forest/30">
+            <LeafIcon className="h-12 w-12" />
+          </div>
+        )}
+
         {outOfStock && (
           <span className="absolute left-3 top-3 rounded-full bg-ink/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-ivory">
             Out of Stock
+          </span>
+        )}
+
+        {!outOfStock && hasDiscount && (
+          <span className="absolute right-3 top-3 rounded-full bg-terracotta px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-ivory">
+            {discountPercent}% OFF
           </span>
         )}
       </Link>
@@ -55,16 +64,18 @@ const mediaType =
           {product.category?.name}
         </p>
         <Link href={`/products/${product.slug}`}>
-          <h3 className="mt-1 font-display text-base font-semibold leading-snug text-ink hover:text-forest">
+          <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] font-display text-base font-semibold leading-snug text-ink hover:text-forest">
             {product.name}
           </h3>
         </Link>
         <div className="mt-auto flex items-center justify-between pt-4">
           <div>
-            <span className="font-display text-lg font-bold text-forest">₹{product.price}</span>
-            {product.compareAtPrice > product.price && (
-              <span className="ml-2 text-xs text-muted line-through">₹{product.compareAtPrice}</span>
-            )}
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-lg font-bold text-forest">₹{product.price}</span>
+              {hasDiscount && (
+                <span className="text-xs text-muted line-through">₹{product.compareAtPrice}</span>
+              )}
+            </div>
             <p className="text-[11px] text-muted">{product.unit}</p>
           </div>
           <button

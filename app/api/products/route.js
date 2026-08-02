@@ -22,6 +22,14 @@ function normalizeMedia(media) {
   }));
 }
 
+const SORT_MAP = {
+  newest: { createdAt: -1 },
+  "price-asc": { price: 1 },
+  "price-desc": { price: -1 },
+  "name-asc": { name: 1 },
+  "name-desc": { name: -1 },
+};
+
 export async function GET(req) {
   try {
     await connectDB();
@@ -31,6 +39,9 @@ export async function GET(req) {
     const featured = searchParams.get("featured");
     const activeOnly = searchParams.get("activeOnly");
     const limit = parseInt(searchParams.get("limit") || "0", 10);
+    const sort = searchParams.get("sort");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
 
     const query = {};
     if (category) query.category = category;
@@ -38,8 +49,21 @@ export async function GET(req) {
     if (activeOnly === "true") query.isActive = true;
     if (search) query.$text = { $search: search };
 
-    // Products are ordered by SKU across the site.
-    let cursor = Product.find(query).populate("category", "name slug").sort({ sku: 1 });
+    // Price range filter
+    if (minPrice || maxPrice) {
+      query.price = {};
+      const min = Number(minPrice);
+      const max = Number(maxPrice);
+      if (minPrice && Number.isFinite(min)) query.price.$gte = min;
+      if (maxPrice && Number.isFinite(max)) query.price.$lte = max;
+      if (Object.keys(query.price).length === 0) delete query.price;
+    }
+
+    // Products are ordered by SKU across the site by default;
+    // an explicit `sort` param overrides that.
+    const sortSpec = (sort && SORT_MAP[sort]) || { sku: 1 };
+
+    let cursor = Product.find(query).populate("category", "name slug").sort(sortSpec);
     if (limit) cursor = cursor.limit(limit);
 
     const products = await cursor;
