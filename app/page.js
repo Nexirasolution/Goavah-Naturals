@@ -9,6 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
 import { ArrowRight } from "lucide-react";
+import { getSettings } from "@/lib/settings";
 export const dynamic = "force-dynamic";
 
 async function getData() {
@@ -40,10 +41,11 @@ const CATEGORY_IMAGES = {
 };
 export default async function HomePage() {
   const { categories, bestSelling } = await getData();
+  const settings = await getSettings();
 
   return (
     <>
-      <Navbar />
+      <Navbar settings={settings} />
 
       <HeroSlider />
 

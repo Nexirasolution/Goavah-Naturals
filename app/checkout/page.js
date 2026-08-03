@@ -189,7 +189,7 @@ export default function CheckoutPage() {
   if (placedOrder) {
     return (
       <>
-        <Navbar />
+        <Navbar settings={settings} />
         <section className="mx-auto max-w-xl px-5 py-20 text-center md:px-8">
           <span className="badge-stamp mx-auto flex h-16 w-16 items-center justify-center border-gold/40 bg-forest text-ivory">
             ✓
@@ -225,7 +225,7 @@ export default function CheckoutPage() {
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <Navbar />
+      <Navbar settings={settings} />
       <section className="mx-auto max-w-4xl px-5 py-12 md:px-8">
         <h1 className="font-display text-3xl font-bold text-forest">Checkout</h1>
 

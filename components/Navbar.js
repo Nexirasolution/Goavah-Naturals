@@ -15,7 +15,7 @@ const LINKS = [
 
 function ShippingMarquee({ settings }) {
   const freeShipping = settings?.freeShipping ?? 999;
-  const shippingFee = settings?.shippingFee ?? 49;
+  // const shippingFee = settings?.shippingFee ?? 49;
 
   const messages = [
     `🚚 FREE SHIPPING on orders above ₹${freeShipping}`,

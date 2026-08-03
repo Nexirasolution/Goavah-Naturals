@@ -10,6 +10,7 @@ import { LeafIcon } from "@/components/Icons";
 import ProductGallery from "@/components/ProductGallery";
 import ProductAccordion from "@/components/ProductAccordion";
 import RelatedProducts from "@/components/RelatedProducts";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export default async function ProductDetailPage({ params }) {
   if (!product) notFound();
 
   const related = await getRelatedProducts(product);
+  const settings = await getSettings();
   const media = product.media || [];
 
   const accordionItems = [
@@ -66,7 +68,7 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar settings={settings} />
       <section className="mx-auto max-w-6xl px-5 py-12 md:px-8">
         {/* Image + core info side by side */}
         <div className="grid gap-12 md:grid-cols-2">

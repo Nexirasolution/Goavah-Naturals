@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { LeafIcon } from "@/components/Icons";
@@ -21,6 +21,20 @@ export default function TrackOrderPage() {
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/settings");
+        const data = await res.json();
+        setSettings(data.settings || null);
+      } catch (err) {
+        console.error("Failed to load settings", err);
+      }
+    }
+    loadSettings();
+  }, []);
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -43,7 +57,7 @@ export default function TrackOrderPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar settings={settings} />
       <section className="mx-auto max-w-3xl px-5 py-12 md:px-8">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">

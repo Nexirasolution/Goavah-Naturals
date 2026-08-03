@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getSettings } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export const metadata = {
 export default async function CategoriesPage({ searchParams }) {
   const { page: pageParam } = await searchParams;
   const allCategories = await getCategories();
+  const settings = await getSettings();
 
   const totalPages = Math.max(1, Math.ceil(allCategories.length / PAGE_SIZE));
   const currentPage = Math.min(
@@ -47,7 +49,7 @@ export default async function CategoriesPage({ searchParams }) {
 
   return (
     <>
-      <Navbar />
+      <Navbar settings={settings} />
 
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-16">
         <div className="mb-10 text-center">
