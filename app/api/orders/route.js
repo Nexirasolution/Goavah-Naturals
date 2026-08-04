@@ -60,11 +60,14 @@ export async function POST(req) {
         return NextResponse.json({ error: `Insufficient stock for ${product.name}.` }, { status: 400 });
       }
 
+      const firstImage = product.media?.find((m) => m.type === "image");
+
       subtotal += product.price * item.quantity;
       validatedItems.push({
         product: product._id,
         name: product.name,
-        image: product.images?.[0]?.url || "",
+        sku: product.sku || "",
+        image: firstImage?.url || "",
         price: product.price,
         quantity: item.quantity,
         unit: product.unit,

@@ -22,6 +22,7 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
 
   async function loadOrders() {
     setLoading(true);
@@ -212,11 +213,36 @@ export default function AdminOrdersPage() {
             <div className="leaf-divider my-5" />
 
             <p className="text-xs font-semibold uppercase text-muted">Items</p>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2 space-y-3">
               {selected.items.map((item, i) => (
-                <div key={i} className="flex justify-between gap-3 text-sm">
-                  <span className="text-ink/80">{item.name} × {item.quantity}</span>
-                  <span className="shrink-0 text-ink">₹{item.price * item.quantity}</span>
+                <div key={i} className="flex items-start gap-3 text-sm">
+                  {item.image ? (
+                    <button
+                      type="button"
+                      onClick={() => setZoomImage({ src: item.image, alt: item.name })}
+                      className="shrink-0 rounded-lg border border-gold/15 focus:outline-none focus:ring-2 focus:ring-forest/50"
+                      aria-label={`Zoom image of ${item.name}`}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-12 w-12 rounded-lg object-cover"
+                      />
+                    </button>
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-gold/15 bg-champagne text-[10px] text-muted">
+                      No image
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="break-words leading-snug text-ink/90" title={item.name}>
+                      {item.name}
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {item.sku ? `SKU: ${item.sku}` : "SKU: —"} · Qty {item.quantity}
+                    </p>
+                  </div>
+                  <span className="shrink-0 self-start text-ink">₹{item.price * item.quantity}</span>
                 </div>
               ))}
             </div>
@@ -253,6 +279,31 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </Modal>
+
+      {/* Image zoom lightbox */}
+      {zoomImage && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/80 p-4"
+          onClick={() => setZoomImage(null)}
+        >
+          <button
+            onClick={() => setZoomImage(null)}
+            aria-label="Close"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-3xl leading-none text-ivory hover:bg-white/20"
+          >
+            ×
+          </button>
+          <img
+            src={zoomImage.src}
+            alt={zoomImage.alt}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[85vh] max-w-full rounded-xl2 object-contain shadow-2xl"
+          />
+          <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-ivory/90">
+            {zoomImage.alt}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
