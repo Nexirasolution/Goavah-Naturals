@@ -21,6 +21,8 @@ const EMPTY_FORM = {
   media: [],
 };
 
+const PAGE_SIZE = 20;
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -32,20 +34,35 @@ export default function AdminProductsPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
-  async function loadData() {
+  async function loadProducts() {
     setLoading(true);
-    const [pRes, cRes] = await Promise.all([fetch("/api/products"), fetch("/api/categories")]);
-    const pData = await pRes.json();
-    const cData = await cRes.json();
-    setProducts(pData.products || []);
-    setCategories(cData.categories || []);
+    const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+    if (search) params.set("search", search);
+    const res = await fetch(`/api/products?${params.toString()}`);
+    const data = await res.json();
+    setProducts(data.products || []);
+    setPagination(data.pagination || null);
     setLoading(false);
   }
 
   useEffect(() => {
-    loadData();
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((d) => setCategories(d.categories || []));
   }, []);
+
+  // Reset to page 1 whenever the search term changes
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  useEffect(() => {
+    loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, search]);
 
   function openAdd() {
     setEditingId(null);
@@ -95,7 +112,7 @@ export default function AdminProductsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save product.");
       setModalOpen(false);
-      loadData();
+      loadProducts();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -106,23 +123,43 @@ export default function AdminProductsPage() {
   async function handleDelete(id) {
     if (!confirm("Delete this product? This cannot be undone.")) return;
     await fetch(`/api/products/${id}`, { method: "DELETE" });
-    loadData();
+    // If this was the last item on the current page, step back a page
+    if (products.length === 1 && page > 1) {
+      setPage((p) => p - 1);
+    } else {
+      loadProducts();
+    }
   }
 
-  const filtered = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.sku?.toLowerCase().includes(search.toLowerCase())
-  );
+  function goToPage(p) {
+    if (p < 1 || (pagination && p > pagination.totalPages)) return;
+    setPage(p);
+  }
+
+  const totalPages = pagination?.totalPages || 1;
+
+  function getPageNumbers() {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+    return pages;
+  }
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-forest">Products</h1>
-          <p className="mt-1 text-sm text-muted">{products.length} products total</p>
+          <p className="mt-1 text-sm text-muted">
+            {pagination ? `${pagination.total} products total` : "Loading..."}
+          </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <input
             type="text"
             placeholder="Search by name or SKU..."
@@ -165,10 +202,12 @@ export default function AdminProductsPage() {
           <tbody>
             {loading ? (
               <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">Loading...</td></tr>
-            ) : filtered.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">No products yet. Add your first product.</td></tr>
+            ) : products.length === 0 ? (
+              <tr><td colSpan={7} className="px-4 py-8 text-center text-muted">
+                {search ? "No products match your search." : "No products yet. Add your first product."}
+              </td></tr>
             ) : (
-              filtered.map((p) => (
+              products.map((p) => (
                 <tr key={p._id} className="border-b border-gold/10 last:border-0">
                   <td className="px-4 py-3 font-mono text-xs text-ink/70">{p.sku}</td>
                   <td className="flex items-center gap-3 px-4 py-3">
@@ -214,6 +253,52 @@ export default function AdminProductsPage() {
           </tbody>
         </table>
       </div>
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-5 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <p className="text-xs text-muted">
+            Showing {(pagination.page - 1) * pagination.limit + 1}–
+            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} products
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <button
+              onClick={() => goToPage(page - 1)}
+              disabled={page === 1}
+              className="rounded-full border border-gold/30 px-3 py-1.5 text-xs font-semibold text-ink/70 hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              &larr; Prev
+            </button>
+
+            {getPageNumbers().map((p, i) =>
+              p === "..." ? (
+                <span key={`ellipsis-${i}`} className="px-2 text-xs text-muted">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  className={`h-8 w-8 rounded-full text-xs font-semibold transition ${
+                    p === page
+                      ? "bg-forest text-ivory"
+                      : "border border-gold/30 text-ink/70 hover:bg-champagne"
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            )}
+
+            <button
+              onClick={() => goToPage(page + 1)}
+              disabled={page === totalPages}
+              className="rounded-full border border-gold/30 px-3 py-1.5 text-xs font-semibold text-ink/70 hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next &rarr;
+            </button>
+          </div>
+        </div>
+      )}
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? "Edit Product" : "Add Product"} wide>
         <form onSubmit={handleSave} className="space-y-4">
@@ -299,7 +384,7 @@ export default function AdminProductsPage() {
       <BulkUploadModal
         open={bulkOpen}
         onClose={() => setBulkOpen(false)}
-        onDone={loadData}
+        onDone={loadProducts}
       />
     </div>
   );

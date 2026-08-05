@@ -43,10 +43,16 @@ export async function GET(req) {
     const search = (searchParams.get("search") || "").trim();
     const featured = searchParams.get("featured");
     const activeOnly = searchParams.get("activeOnly");
-    const limit = parseInt(searchParams.get("limit") || "0", 10);
     const sort = searchParams.get("sort");
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
+
+    // Pagination params. `limit=0` (or omitted with no `page`) preserves the old
+    // "return everything" behavior for any other callers of this endpoint.
+    const page = Math.max(parseInt(searchParams.get("page") || "1", 10), 1);
+    const hasPageParam = searchParams.has("page");
+    const rawLimit = parseInt(searchParams.get("limit") || "0", 10);
+    const limit = hasPageParam ? (rawLimit > 0 ? rawLimit : 12) : rawLimit;
 
     const query = {};
     if (category) query.category = category;
@@ -79,10 +85,26 @@ export async function GET(req) {
     const sortSpec = (sort && SORT_MAP[sort]) || { sku: 1 };
 
     let cursor = Product.find(query).populate("category", "name slug").sort(sortSpec);
-    if (limit) cursor = cursor.limit(limit);
+
+    let total = null;
+    if (limit) {
+      total = await Product.countDocuments(query);
+      cursor = cursor.skip((page - 1) * limit).limit(limit);
+    }
 
     const products = await cursor;
-    return NextResponse.json({ products });
+
+    const body = { products };
+    if (limit) {
+      body.pagination = {
+        page,
+        limit,
+        total,
+        totalPages: Math.max(Math.ceil(total / limit), 1),
+      };
+    }
+
+    return NextResponse.json(body);
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Failed to fetch products." }, { status: 500 });

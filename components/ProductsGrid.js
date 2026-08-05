@@ -12,6 +12,8 @@ const SORT_OPTIONS = [
   { value: "name-asc", label: "Name: A to Z" },
 ];
 
+const PAGE_SIZE = 12;
+
 export default function ProductsGrid({ initialCategory, initialSearch }) {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -22,6 +24,8 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
   useEffect(() => {
     fetch("/api/categories?activeOnly=true")
@@ -29,9 +33,18 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
       .then((d) => setCategories(d.categories || []));
   }, []);
 
+  // Any filter change should jump back to page 1
+  useEffect(() => {
+    setPage(1);
+  }, [activeCategory, search, sortBy, minPrice, maxPrice]);
+
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({ activeOnly: "true" });
+    const params = new URLSearchParams({
+      activeOnly: "true",
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    });
     if (activeCategory) params.set("category", activeCategory);
     if (search) params.set("search", search);
     if (sortBy) params.set("sort", sortBy);
@@ -40,9 +53,12 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
 
     fetch(`/api/products?${params.toString()}`)
       .then((r) => r.json())
-      .then((d) => setProducts(d.products || []))
+      .then((d) => {
+        setProducts(d.products || []);
+        setPagination(d.pagination || null);
+      })
       .finally(() => setLoading(false));
-  }, [activeCategory, search, sortBy, minPrice, maxPrice]);
+  }, [activeCategory, search, sortBy, minPrice, maxPrice, page]);
 
   function clearFilters() {
     setActiveCategory("");
@@ -52,7 +68,27 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
     setMaxPrice("");
   }
 
+  function goToPage(p) {
+    if (p < 1 || (pagination && p > pagination.totalPages)) return;
+    setPage(p);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   const hasActiveFilters = activeCategory || search || sortBy || minPrice || maxPrice;
+  const totalPages = pagination?.totalPages || 1;
+
+  // Compact page-number list: first, last, current ±1, with ellipses
+  function getPageNumbers() {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+    return pages;
+  }
 
   return (
     <div>
@@ -167,11 +203,60 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
           <p className="mt-1 text-sm text-muted">Try a different category or search term.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
+            {products.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+
+          {pagination && pagination.totalPages > 1 && (
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <p className="text-xs text-muted">
+                Showing {(pagination.page - 1) * pagination.limit + 1}–
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}{" "}
+                products
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                <button
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page === 1}
+                  className="rounded-full border border-gold/30 px-3 py-1.5 text-xs font-semibold text-ink/70 hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  &larr; Prev
+                </button>
+
+                {getPageNumbers().map((p, i) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${i}`} className="px-2 text-xs text-muted">
+                      …
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => goToPage(p)}
+                      className={`h-8 w-8 rounded-full text-xs font-semibold transition ${
+                        p === page
+                          ? "bg-forest text-ivory"
+                          : "border border-gold/30 text-ink/70 hover:bg-champagne"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+
+                <button
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page === totalPages}
+                  className="rounded-full border border-gold/30 px-3 py-1.5 text-xs font-semibold text-ink/70 hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Next &rarr;
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
