@@ -22,6 +22,11 @@ function normalizeMedia(media) {
   }));
 }
 
+// Escape regex special characters so search terms like "gift+set" or "100%" don't break the query
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 const SORT_MAP = {
   newest: { createdAt: -1 },
   "price-asc": { price: 1 },
@@ -35,7 +40,7 @@ export async function GET(req) {
     await connectDB();
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
-    const search = searchParams.get("search");
+    const search = (searchParams.get("search") || "").trim();
     const featured = searchParams.get("featured");
     const activeOnly = searchParams.get("activeOnly");
     const limit = parseInt(searchParams.get("limit") || "0", 10);
@@ -47,7 +52,17 @@ export async function GET(req) {
     if (category) query.category = category;
     if (featured === "true") query.isFeatured = true;
     if (activeOnly === "true") query.isActive = true;
-    if (search) query.$text = { $search: search };
+
+    if (search) {
+      const safe = escapeRegex(search);
+      query.$or = [
+        { name: { $regex: safe, $options: "i" } },
+        { description: { $regex: safe, $options: "i" } },
+        { shortDescription: { $regex: safe, $options: "i" } },
+        { sku: { $regex: safe, $options: "i" } },
+        { tags: { $regex: safe, $options: "i" } },
+      ];
+    }
 
     // Price range filter
     if (minPrice || maxPrice) {
