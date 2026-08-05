@@ -37,6 +37,16 @@ export async function PUT(req, { params }) {
       order.statusHistory.push({ status: body.status, note: body.note || "" });
     }
 
+    if (body.tracking) {
+      const { courier = "", trackingNumber = "", trackingUrl = "" } = body.tracking;
+      order.tracking = {
+        courier: courier.trim(),
+        trackingNumber: trackingNumber.trim(),
+        trackingUrl: trackingUrl.trim(),
+        updatedAt: new Date(),
+      };
+    }
+
     if (body.paymentStatus) order.paymentStatus = body.paymentStatus;
     if (body.notes !== undefined) order.notes = body.notes;
 

@@ -15,6 +15,8 @@ const STATUS_COLORS = {
   cancelled: "bg-muted/10 text-muted",
 };
 
+const EMPTY_TRACKING = { courier: "", trackingNumber: "", trackingUrl: "" };
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,8 @@ export default function AdminOrdersPage() {
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
+  const [tracking, setTracking] = useState(EMPTY_TRACKING);
+  const [trackingSaved, setTrackingSaved] = useState(false);
 
   async function loadOrders() {
     setLoading(true);
@@ -38,6 +42,20 @@ export default function AdminOrdersPage() {
     loadOrders();
   }, [filter]);
 
+  // Sync the tracking form whenever a different order is opened
+  useEffect(() => {
+    if (selected) {
+      setTracking({
+        courier: selected.tracking?.courier || "",
+        trackingNumber: selected.tracking?.trackingNumber || "",
+        trackingUrl: selected.tracking?.trackingUrl || "",
+      });
+      setTrackingSaved(false);
+    } else {
+      setTracking(EMPTY_TRACKING);
+    }
+  }, [selected]);
+
   async function updateStatus(id, status) {
     setUpdating(true);
     const res = await fetch(`/api/orders/${id}`, {
@@ -50,6 +68,27 @@ export default function AdminOrdersPage() {
     if (res.ok) {
       setSelected(data.order);
       loadOrders();
+    } else {
+      alert(data.error);
+    }
+  }
+
+  async function saveTracking() {
+    if (!selected) return;
+    setUpdating(true);
+    setTrackingSaved(false);
+    const res = await fetch(`/api/orders/${selected._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tracking }),
+    });
+    const data = await res.json();
+    setUpdating(false);
+    if (res.ok) {
+      setSelected(data.order);
+      loadOrders();
+      setTrackingSaved(true);
+      setTimeout(() => setTrackingSaved(false), 2500);
     } else {
       alert(data.error);
     }
@@ -275,6 +314,55 @@ export default function AdminOrdersPage() {
                   {s}
                 </button>
               ))}
+            </div>
+
+            <div className="leaf-divider my-5" />
+
+            <p className="text-xs font-semibold uppercase text-muted">Tracking Details</p>
+            <p className="mt-1 text-xs text-muted">
+              Shown to the customer on the Track Order page once saved.
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-medium text-ink/70">Courier</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Delhivery, India Post"
+                  value={tracking.courier}
+                  onChange={(e) => setTracking((t) => ({ ...t, courier: e.target.value }))}
+                  className="mt-1 w-full rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-ink/70">Tracking / AWB number</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 1234567890"
+                  value={tracking.trackingNumber}
+                  onChange={(e) => setTracking((t) => ({ ...t, trackingNumber: e.target.value }))}
+                  className="mt-1 w-full rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="text-xs font-medium text-ink/70">Tracking URL (optional)</label>
+                <input
+                  type="text"
+                  placeholder="https://courier-site.com/track/..."
+                  value={tracking.trackingUrl}
+                  onChange={(e) => setTracking((t) => ({ ...t, trackingUrl: e.target.value }))}
+                  className="mt-1 w-full rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
+                />
+              </div>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                onClick={saveTracking}
+                disabled={updating}
+                className="rounded-full bg-forest px-5 py-2 text-xs font-semibold text-ivory shadow-card disabled:opacity-60"
+              >
+                {updating ? "Saving..." : "Save tracking"}
+              </button>
+              {trackingSaved && <span className="text-xs font-medium text-forest">Saved ✓</span>}
             </div>
           </div>
         )}

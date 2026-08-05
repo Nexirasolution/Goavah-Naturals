@@ -145,6 +145,37 @@ export default function TrackOrderPage() {
                   <p className="mt-4 text-sm text-terracotta">This order was cancelled.</p>
                 )}
 
+                {(order.tracking?.courier || order.tracking?.trackingNumber) && (
+                  <>
+                    <div className="leaf-divider my-5" />
+                    <div className="rounded-xl2 border border-gold/20 bg-champagne/50 p-4">
+                      <p className="text-xs font-semibold uppercase text-muted">Shipment Tracking</p>
+                      <div className="mt-2 space-y-1 text-sm text-ink/80">
+                        {order.tracking.courier && (
+                          <p>
+                            <span className="font-medium text-ink">Courier:</span> {order.tracking.courier}
+                          </p>
+                        )}
+                        {order.tracking.trackingNumber && (
+                          <p>
+                            <span className="font-medium text-ink">Tracking No:</span> {order.tracking.trackingNumber}
+                          </p>
+                        )}
+                      </div>
+                      {order.tracking.trackingUrl && (
+                        
+                        <a  href={order.tracking.trackingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 inline-block rounded-full bg-forest px-5 py-2 text-xs font-semibold text-ivory shadow-soft transition hover:bg-forest-light"
+                        >
+                          Track shipment &rarr;
+                        </a>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 <div className="leaf-divider my-5" />
 
                 <div className="space-y-2">

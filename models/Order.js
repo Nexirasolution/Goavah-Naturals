@@ -14,6 +14,16 @@ const OrderItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const TrackingSchema = new mongoose.Schema(
+  {
+    courier: { type: String, default: "" },
+    trackingNumber: { type: String, default: "" },
+    trackingUrl: { type: String, default: "" },
+    updatedAt: { type: Date, default: null },
+  },
+  { _id: false }
+);
+
 const OrderSchema = new mongoose.Schema(
   {
     orderNumber: { type: String, required: true, unique: true },
@@ -60,6 +70,7 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    tracking: { type: TrackingSchema, default: () => ({}) },
     notes: { type: String, default: "" },
   },
   { timestamps: true }
