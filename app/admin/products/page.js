@@ -5,6 +5,9 @@ import Image from "next/image";
 import Modal from "@/components/Modal";
 import MediaUploader from "@/components/MediaUploader";
 import BulkUploadModal from "@/components/BulkUploadModal";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const EMPTY_FORM = {
   name: "",
@@ -36,6 +39,7 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   async function loadProducts() {
     setLoading(true);
@@ -150,6 +154,127 @@ export default function AdminProductsPage() {
     return pages;
   }
 
+  // --- Export helpers ---
+
+  // Fetches every product matching the current search (no pagination limit)
+  async function fetchAllProductsForExport() {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    // omitting `page` and `limit` makes the API return the full unpaginated list
+    const res = await fetch(`/api/products?${params.toString()}`);
+    const data = await res.json();
+    return data.products || [];
+  }
+
+  function buildExportRows(list) {
+    return list.map((p) => ({
+      SKU: p.sku,
+      Name: p.name,
+      Category: p.category?.name || "",
+      Price: p.price,
+      "Compare Price": p.compareAtPrice || 0,
+      Unit: p.unit,
+      Stock: p.stock,
+      "Low Stock Threshold": p.lowStockThreshold,
+      Status: p.isActive ? "Active" : "Hidden",
+      Featured: p.isFeatured ? "Yes" : "No",
+      Description: p.description || "",
+    }));
+  }
+
+  async function exportExcel() {
+    setExporting(true);
+    try {
+      const list = await fetchAllProductsForExport();
+      if (list.length === 0) {
+        alert("No products to export.");
+        return;
+      }
+      const rows = buildExportRows(list);
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      // Reasonable column widths
+      worksheet["!cols"] = [
+        { wch: 14 }, // SKU
+        { wch: 28 }, // Name
+        { wch: 16 }, // Category
+        { wch: 10 }, // Price
+        { wch: 14 }, // Compare Price
+        { wch: 10 }, // Unit
+        { wch: 8 },  // Stock
+        { wch: 10 }, // Low Stock Threshold
+        { wch: 10 }, // Status
+        { wch: 10 }, // Featured
+        { wch: 40 }, // Description
+      ];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `products-${dateStr}.xlsx`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to export Excel file.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function exportPDF() {
+    setExporting(true);
+    try {
+      const list = await fetchAllProductsForExport();
+      if (list.length === 0) {
+        alert("No products to export.");
+        return;
+      }
+
+      const doc = new jsPDF({ orientation: "landscape" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      doc.setFontSize(16);
+      doc.setTextColor(30, 60, 45);
+      doc.text("KMC Iyarkai Creation", pageWidth / 2, 16, { align: "center" });
+
+      doc.setFontSize(12);
+      doc.setTextColor(80, 80, 80);
+      doc.text("Product List", pageWidth / 2, 23, { align: "center" });
+      doc.setFontSize(9);
+      doc.text(`Generated on ${new Date().toLocaleDateString("en-IN")} · ${list.length} products`, pageWidth / 2, 29, {
+        align: "center",
+      });
+
+      autoTable(doc, {
+        startY: 36,
+        head: [["SKU", "Name", "Category", "Price (₹)", "Stock", "Status", "Featured"]],
+        body: list.map((p) => [
+          p.sku,
+          p.name,
+          p.category?.name || "-",
+          p.price,
+          p.stock,
+          p.isActive ? "Active" : "Hidden",
+          p.isFeatured ? "Yes" : "No",
+        ]),
+        theme: "grid",
+        headStyles: { fillColor: [184, 146, 63] },
+        styles: { fontSize: 8 },
+        columnStyles: {
+          1: { cellWidth: 70 }, // Name column gets more room
+        },
+      });
+
+      const dateStr = new Date().toISOString().slice(0, 10);
+      doc.save(`products-${dateStr}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to export PDF.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -167,6 +292,20 @@ export default function AdminProductsPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
           />
+          <button
+            onClick={exportExcel}
+            disabled={exporting}
+            className="rounded-full border border-gold/40 px-5 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50"
+          >
+            {exporting ? "Exporting..." : "Export Excel"}
+          </button>
+          <button
+            onClick={exportPDF}
+            disabled={exporting}
+            className="rounded-full border border-gold/40 px-5 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50"
+          >
+            {exporting ? "Exporting..." : "Export PDF"}
+          </button>
           <button
             onClick={() => setBulkOpen(true)}
             disabled={categories.length === 0}
