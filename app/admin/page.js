@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import SalesReportGenerator from "@/components/admin/SalesReportGenerator";
 
 function StatCard({ label, value, sub, accent }) {
   return (
@@ -88,6 +89,10 @@ export default function AdminDashboardPage() {
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-2">
         <StatCard label="Total Products" value={data.totalProducts} sub="Across all categories" />
         <StatCard label="Total Categories" value={data.totalCategories} sub="Active collections" />
+      </div>
+
+      <div className="mt-6">
+        <SalesReportGenerator />
       </div>
     </div>
   );
