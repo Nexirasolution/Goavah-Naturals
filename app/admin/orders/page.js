@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Modal from "@/components/Modal";
 
@@ -17,6 +17,34 @@ const STATUS_COLORS = {
 
 const EMPTY_TRACKING = { courier: "", trackingNumber: "", trackingUrl: "" };
 
+// --- Simple toast notification ---
+function Toast({ toast, onClose }) {
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(onClose, 3000);
+    return () => clearTimeout(timer);
+  }, [toast, onClose]);
+
+  if (!toast) return null;
+
+  const isError = toast.type === "error";
+
+  return (
+    <div className="pointer-events-none fixed inset-x-0 top-4 z-[70] flex justify-center px-4 sm:top-6">
+      <div
+        role="status"
+        aria-live="polite"
+        className={`pointer-events-auto flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium shadow-lg transition-all ${
+          isError ? "bg-terracotta text-ivory" : "bg-forest text-ivory"
+        }`}
+      >
+        <span className="text-base leading-none">{isError ? "⚠" : "✓"}</span>
+        {toast.message}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +54,11 @@ export default function AdminOrdersPage() {
   const [updating, setUpdating] = useState(false);
   const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
   const [tracking, setTracking] = useState(EMPTY_TRACKING);
-  const [trackingSaved, setTrackingSaved] = useState(false);
+  const [toast, setToast] = useState(null); // { message, type } | null
+
+  const showToast = useCallback((message, type = "success") => {
+    setToast({ message, type });
+  }, []);
 
   async function loadOrders() {
     setLoading(true);
@@ -50,7 +82,6 @@ export default function AdminOrdersPage() {
         trackingNumber: selected.tracking?.trackingNumber || "",
         trackingUrl: selected.tracking?.trackingUrl || "",
       });
-      setTrackingSaved(false);
     } else {
       setTracking(EMPTY_TRACKING);
     }
@@ -68,15 +99,15 @@ export default function AdminOrdersPage() {
     if (res.ok) {
       setSelected(data.order);
       loadOrders();
+      showToast(`Status updated to "${status}"`);
     } else {
-      alert(data.error);
+      showToast(data.error || "Failed to update status", "error");
     }
   }
 
   async function saveTracking() {
     if (!selected) return;
     setUpdating(true);
-    setTrackingSaved(false);
     const res = await fetch(`/api/orders/${selected._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -87,10 +118,9 @@ export default function AdminOrdersPage() {
     if (res.ok) {
       setSelected(data.order);
       loadOrders();
-      setTrackingSaved(true);
-      setTimeout(() => setTrackingSaved(false), 2500);
+      showToast("Tracking details updated successfully");
     } else {
-      alert(data.error);
+      showToast(data.error || "Failed to save tracking details", "error");
     }
   }
 
@@ -103,6 +133,8 @@ export default function AdminOrdersPage() {
 
   return (
     <div>
+      <Toast toast={toast} onClose={() => setToast(null)} />
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-forest">Orders</h1>
@@ -362,7 +394,6 @@ export default function AdminOrdersPage() {
               >
                 {updating ? "Saving..." : "Save tracking"}
               </button>
-              {trackingSaved && <span className="text-xs font-medium text-forest">Saved ✓</span>}
             </div>
           </div>
         )}
