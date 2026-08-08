@@ -235,7 +235,7 @@ export default function AdminProductsPage() {
 
       doc.setFontSize(16);
       doc.setTextColor(30, 60, 45);
-      doc.text("KMC Iyarkai Creation", pageWidth / 2, 16, { align: "center" });
+      doc.text("Abi Foods and Oils", pageWidth / 2, 16, { align: "center" });
 
       doc.setFontSize(12);
       doc.setTextColor(80, 80, 80);
@@ -448,7 +448,7 @@ export default function AdminProductsPage() {
               required
               value={form.sku}
               onChange={(v) => setForm({ ...form, sku: v.toUpperCase() })}
-              placeholder="e.g. HC-OIL-001"
+              placeholder="e.g. AF-OIL-001"
             />
           </div>
 
@@ -470,7 +470,7 @@ export default function AdminProductsPage() {
           <div className="grid gap-4 sm:grid-cols-4">
             <FormField label="Price (₹)" required type="number" value={form.price} onChange={(v) => setForm({ ...form, price: v })} />
             <FormField label="Compare Price" type="number" value={form.compareAtPrice} onChange={(v) => setForm({ ...form, compareAtPrice: v })} />
-            <FormField label="Unit" value={form.unit} onChange={(v) => setForm({ ...form, unit: v })} placeholder="e.g. 500 ml" />
+            <FormField label="Unit" value={form.unit} onChange={(v) => setForm({ ...form, unit: v })} placeholder="e.g. 1 L / 500 g" />
             <FormField label="Stock" required type="number" value={form.stock} onChange={(v) => setForm({ ...form, stock: v })} />
           </div>
 

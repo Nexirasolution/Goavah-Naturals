@@ -12,7 +12,7 @@ const EMPTY_FORM = {
   isActive: true,
   sortOrder: 0,
 };
-const ICON_OPTIONS = ["leaf", "bag", "pot", "wood", "drop", "herb"];
+const ICON_OPTIONS = ["leaf", "bag", "drop", "herb"];
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -220,7 +220,7 @@ export default function AdminCategoriesPage() {
             <ImageUploader
               images={form.image}
               onChange={(imgs) => setForm({ ...form, image: imgs })}
-              folder="kmc-categories"
+              folder="abi-foods-categories"
               multiple={false}
             />
           </div>

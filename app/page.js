@@ -26,19 +26,23 @@ async function getData() {
 }
 
 const WHY_CHOOSE = [
-  { title: "100% Handmade", desc: "Crafted by skilled artisans" },
-  { title: "Eco-Friendly", desc: "Natural & sustainable materials" },
-  { title: "Premium Quality", desc: "Carefully crafted with perfection" },
+  { title: "Wood Cold-Pressed", desc: "Traditional marachekku extraction, no heat" },
+  { title: "100% Natural", desc: "No chemicals, no preservatives added" },
+  { title: "Farm Fresh Spices", desc: "Sourced and ground in small batches" },
   { title: "Pan India Delivery", desc: "Safe & timely, everywhere" },
 ];
+
+// Map your Category collection's `name` field (as entered in the admin panel)
+// to a fallback image. Update these keys to match your actual category names.
 const CATEGORY_IMAGES = {
-  "Handmade Wire Bags": "/categroy/wire-bags.png",
-  "Organic Fertilizers & Soil Enhancers": "/categroy/organic-fertilizers.png",
-  "Clay Products": "/categroy/clay-products.png",
-  "Wooden Products": "/categroy/wooden-products.png",
-  "Handmade Wooden Toys & Miniatures": "/categroy/wooden-toys.png",
-  "Herbal Products": "/categroy/herbal-products.png",
+  "Cold-Pressed Oils": "/categroy/cold-pressed-oils.png",
+  "Sambar & Curry Masalas": "/categroy/masala-powders.png",
+  "Spice Powders": "/categroy/spice-powders.png",
+  "Health Mix & Malt": "/categroy/health-mix.png",
+  "Traditional Podi": "/categroy/podi.png",
+  "Turmeric & Roots": "/categroy/turmeric.png",
 };
+
 export default async function HomePage() {
   const { categories, bestSelling } = await getData();
   const settings = await getSettings();
@@ -52,6 +56,9 @@ export default async function HomePage() {
       {/* Categories */}
       <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
         <div className="mb-8 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
+            Wood Pressed &middot; Farm Fresh
+          </p>
           <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
             Shop by Category
           </h2>
@@ -142,6 +149,8 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      
 
       <Footer />
     </>

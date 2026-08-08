@@ -10,12 +10,12 @@ import { getSettings } from "@/lib/settings";
 export const dynamic = "force-dynamic";
 
 const CATEGORY_IMAGES = {
-  "Handmade Wire Bags": "/categroy/wire-bags.png",
-  "Organic Fertilizers & Soil Enhancers": "/categroy/organic-fertilizers.png",
-  "Clay Products": "/categroy/clay-products.png",
-  "Wooden Products": "/categroy/wooden-products.png",
-  "Handmade Wooden Toys & Miniatures": "/categroy/wooden-toys.png",
-  "Herbal Products": "/categroy/herbal-products.png",
+  "Cold-Pressed Oils": "/categroy/cold-pressed-oils.png",
+  "Sambar & Curry Masalas": "/categroy/masala-powders.png",
+  "Spice Powders": "/categroy/spice-powders.png",
+  "Health Mix & Malt": "/categroy/health-mix.png",
+  "Traditional Podi": "/categroy/podi.png",
+  "Turmeric & Roots": "/categroy/turmeric.png",
 };
 
 const PAGE_SIZE = 18;
@@ -29,8 +29,8 @@ async function getCategories() {
 }
 
 export const metadata = {
-  title: "Shop by Category | KMC Iyarkai Creation",
-  description: "Browse all product categories — handmade, natural, and eco-friendly.",
+  title: "Shop by Category | Abi Foods and Oils",
+  description: "Browse all product categories — wood cold-pressed oils and traditional spice powders.",
 };
 
 export default async function CategoriesPage({ searchParams }) {

@@ -1,9 +1,9 @@
-# KMC Iyarkai Creation — E-commerce Website
+# Abi Foods & Oils — E-commerce Website
 
-A premium, full-stack e-commerce site for KMC's natural & handmade products —
-clay products, wooden crafts, wire bags, organic farm inputs and herbal
-products. Built with Next.js 15 (App Router), MongoDB/Mongoose, and
-Cloudinary for image storage.
+A premium, full-stack e-commerce site for Abi Foods & Oils' traditional
+cold-pressed oils, spice powders, and health mixes — sourced from
+Kosakattur, Kodumudi, Erode. Built with Next.js 15 (App Router),
+MongoDB/Mongoose, and Cloudinary for image storage.
 
 ## Features
 
@@ -60,13 +60,18 @@ cp .env.example .env.local
 
 ## 3. (Optional) Seed starter data
 
-This adds KMC's real product categories (Clay Products, Wooden Products,
-Handmade Wire Bags, Organic Fertilizers, Wooden Toys, Herbal Products) plus
-a few sample products, so the store isn't empty on first run:
+This adds Abi Foods & Oils' real product categories (Cold-Pressed
+Marachekku Oils, Spice & Masala Powders, Health Mixes & Malts, Raw Spices)
+plus starter products — groundnut/sesame/coconut oil, sambar powder, curry
+masala, idli podi, ABC malt, health mix, and more — so the store isn't
+empty on first run:
 
 ```bash
 npm run seed
 ```
+
+> **Note:** the seeded prices, units, and stock counts are placeholders.
+> Update them from **Admin → Products → Edit** before going live.
 
 You can then add product photos from **Admin → Products → Edit**.
 
@@ -112,12 +117,17 @@ scripts/seed.mjs           → Starter data seeding script
 
 ## Notes
 
-- Order numbers are generated automatically in the format `KMC-YYMMDD-0001`.
+- Order numbers are generated automatically in the format `ABI-YYMMDD-0001`.
+  ⚠️ This prefix is set in the order-creation API route (`app/api/orders`),
+  not in this README — if that route still generates `KMC-...` numbers,
+  it needs to be updated separately for this to be accurate.
 - Stock is decremented automatically when an order is placed, and restored
   automatically if an order is cancelled from the admin panel.
 - Customers track orders by phone number (last 10 digits are matched, so it
   works whether they type `+91` or not) — optionally combined with the order
   number for precision.
-- The design uses KMC's brand palette: warm ivory background, forest green,
-  and gold accents, with a terracotta accent for highlights — matching the
-  premium, natural feel of your existing flyers and logo.
+- The design uses a warm ivory background, forest green, and gold accents,
+  with a terracotta accent for highlights — matching the premium, natural
+  feel of traditional marachekku oils and home-style spice blends. Update
+  this palette if Abi Foods & Oils' actual branding/logo uses different
+  colors.

@@ -40,20 +40,30 @@ export default function SalesReportGenerator() {
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
+    // Header
     doc.setFontSize(16);
     doc.setTextColor(30, 60, 45);
-    doc.text("KMC Iyarkai Creation", pageWidth / 2, 18, { align: "center" });
+    doc.text("Abi Foods & Oils", pageWidth / 2, 16, { align: "center" });
+
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Kosakattur, Kodumudi, Erode", pageWidth / 2, 22, { align: "center" });
+    doc.text("Ph: 9344936684  |  abifoodsandoils@gmail.com", pageWidth / 2, 27, { align: "center" });
 
     doc.setFontSize(12);
     doc.setTextColor(80, 80, 80);
-    doc.text("Sales Report", pageWidth / 2, 26, { align: "center" });
+    doc.text("Sales Report", pageWidth / 2, 35, { align: "center" });
     doc.setFontSize(10);
-    doc.text(`${report.from} to ${report.to}`, pageWidth / 2, 32, { align: "center" });
+    doc.text(`${report.from} to ${report.to}`, pageWidth / 2, 41, { align: "center" });
+
+    doc.setDrawColor(184, 146, 63);
+    doc.line(14, 45, pageWidth - 14, 45);
 
     doc.setFontSize(11);
     doc.setTextColor(20, 20, 20);
-    let y = 44;
+    let y = 53;
     doc.text(`Total Sales: Rs. ${report.totalSales.toFixed(2)}`, 14, y);
     doc.text(`Total Orders: ${report.totalOrders}`, 110, y);
     y += 7;
@@ -119,12 +129,34 @@ export default function SalesReportGenerator() {
       styles: { fontSize: 7.5 },
     });
 
+    // Footer on every page
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        "Abi Foods & Oils — Kosakattur, Kodumudi, Erode",
+        pageWidth / 2,
+        pageHeight - 8,
+        { align: "center" }
+      );
+    }
+
     doc.save(`sales-report-${report.from}-to-${report.to}.pdf`);
   };
 
   return (
     <div className="rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
-      <h2 className="font-display text-base font-bold text-forest">Sales Report</h2>
+      <div className="mb-1">
+        <h2 className="font-display text-base font-bold text-forest">Abi Foods & Oils</h2>
+        <p className="text-xs text-muted">Kosakattur, Kodumudi, Erode</p>
+        <p className="text-xs text-muted">
+          Ph: 9344936684 · abifoodsandoils@gmail.com
+        </p>
+      </div>
+
+      <h3 className="mt-3 font-display text-sm font-bold text-forest">Sales Report</h3>
       <p className="mt-1 text-xs text-muted">Select a date range to generate and export a sales report.</p>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">

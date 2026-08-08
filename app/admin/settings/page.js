@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { INDIAN_STATES } from "@/lib/indianStates";
 
 const DEFAULT_SETTINGS = {
-  storeName: "KMC Iyarkai Creation",
-  email: "admin@kmcorganicfarm.com",
-  phone: "",
-  whatsapp: "",
-  address: "",
+  storeName: "Abi Foods and Oils",
+  email: "abifoodsandoils@gmail.com",
+  phone: "9344936684",
+  whatsapp: "919344936684",
+  address: "Kosakattur, Kodumudi, Erode, Tamil Nadu",
   shippingFee: "49",
   freeShipping: "999",
   stateShippingRates: [],
@@ -16,8 +16,9 @@ const DEFAULT_SETTINGS = {
   instagram: "",
   facebook: "",
   youtube: "",
-  seoTitle: "KMC Iyarkai Creation",
-  seoDescription: "",
+  seoTitle: "Abi Foods and Oils | Wood Cold-Pressed Oils & Traditional Spice Powders",
+  seoDescription:
+    "Abi Foods and Oils — wood cold-pressed groundnut, sesame & coconut oils and traditional spice powders, made in Kosakattur, Kodumudi, Erode.",
   maintenanceMode: false,
 };
 

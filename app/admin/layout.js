@@ -27,7 +27,7 @@ export default function AdminLayout({ children }) {
           </button>
 
           <h1 className="text-2xl font-bold text-green-700">
-            KMC Admin
+            Abi Foods Admin
           </h1>
         </div>
       </header>

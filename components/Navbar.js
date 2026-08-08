@@ -19,7 +19,7 @@ function ShippingMarquee({ settings }) {
 
   const messages = [
     `🚚 FREE SHIPPING on orders above ₹${freeShipping}`,
-    `🌿 100% Natural & Organic Products`,
+    `🌿 Traditionally Made, Cold-Pressed Oils`,
     `✅ Pan India Delivery`,
   ];
 
@@ -62,7 +62,7 @@ export default function Navbar({ settings }) {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const storeName = settings?.storeName || "KMC Iyarkai Creation";
+  const storeName = settings?.storeName || "Abi Foods & Oils";
   const [brand, tagline] = storeName.includes(" ")
     ? [storeName.split(" ")[0], storeName.split(" ").slice(1).join(" ")]
     : [storeName, ""];
@@ -85,7 +85,7 @@ export default function Navbar({ settings }) {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-8">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/images/logo.jpeg"
+              src="/images/logo.png"
               alt={storeName}
               width={55}
               height={55}

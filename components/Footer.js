@@ -53,20 +53,17 @@ function MeeshoIcon({ className }) {
 }
 
 export default function Footer({ settings }) {
-  const storeName = settings?.storeName || "KMC Iyarkai Creation";
-  const phone = settings?.phone || "+91 8124128840";
-  const whatsapp = settings?.whatsapp || "918124128840";
-  const address = settings?.address || "Kallidaikurichi, Tirunelveli, Tamil Nadu";
+  const storeName = settings?.storeName || "Abi Foods & Oils";
+  const phone = settings?.phone || "+91 9344936684";
+  const whatsapp = settings?.whatsapp || "919344936684";
+  const address = settings?.address || "Kosakattur, Kodumudi, Erode, Tamil Nadu";
+  const email = settings?.email || "abifoodsandoils@gmail.com";
 
-  const instagram =
-    settings?.instagram ||
-    "https://www.instagram.com/kmc_organic_products?igsh=MWZncXMxN2xvMjMyMA==";
-  const facebook =
-    settings?.facebook || "https://www.facebook.com/share/1EPxhtXdps/?mibextid=wwXIfr";
-  const amazon =
-    settings?.amazon ||
-    "https://www.amazon.in/b?ie=UTF8&node=27943762031&me=AW3M1SX9Q4BOW";
-  const meesho = settings?.meesho || "https://www.meesho.com/KMCORGANICFARM?_ms=3.0.1";
+  // No public social/marketplace links provided yet — leave blank until settings supply them.
+  const instagram = settings?.instagram || "";
+  const facebook = settings?.facebook || "";
+  const amazon = settings?.amazon || "";
+  const meesho = settings?.meesho || "";
   const youtube = settings?.youtube;
 
   const socialLinks = [
@@ -84,7 +81,7 @@ export default function Footer({ settings }) {
         <div>
           <div className="flex items-center gap-4 mb-5">
             <Image
-              src="/images/logo.jpeg"
+              src="/images/logo.png"
               alt={`${storeName} Logo`}
               width={80}
               height={80}
@@ -95,8 +92,8 @@ export default function Footer({ settings }) {
           </div>
 
           <p className="text-green-100 leading-relaxed max-w-md">
-            Fresh and natural organic products directly from our farm.
-            Healthy food with traditional farming methods.
+            Fresh, traditionally made oils and food products from Erode.
+            Cold-pressed marachekku oils and natural home-style powders.
           </p>
 
           <div className="mt-6 space-y-3 text-green-100">
@@ -107,6 +104,13 @@ export default function Footer({ settings }) {
               </p>
             )}
 
+            {email && (
+              <p className="flex items-center gap-2">
+                <span className="w-5 h-5 flex items-center justify-center">✉</span>
+                {email}
+              </p>
+            )}
+
             {address && (
               <p className="flex items-center gap-2">
                 <LocationIcon className="w-5 h-5" />
@@ -114,13 +118,13 @@ export default function Footer({ settings }) {
               </p>
             )}
 
-            <p className="text-sm text-green-200">
-              GST No: {settings?.gst || "33CFZPA9521C1ZH"}
-            </p>
+            {settings?.gst && (
+              <p className="text-sm text-green-200">GST No: {settings.gst}</p>
+            )}
 
-            <p className="text-sm text-green-200">
-              MSME Registration: {settings?.msme || "TN-18-0098443"}
-            </p>
+            {settings?.msme && (
+              <p className="text-sm text-green-200">MSME Registration: {settings.msme}</p>
+            )}
 
             {whatsapp && (
               <a
@@ -183,4 +187,3 @@ export default function Footer({ settings }) {
     </footer>
   );
 }
-

@@ -6,39 +6,32 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["var(--font-display)"],
+        body: ["var(--font-body)"],
+      },
       colors: {
+        // base surfaces
         ivory: "#FBF7EF",
-        champagne: "#F3EADA",
+        champagne: "#F3E9D2",
+        ink: "#2A2620",
+        muted: "#7A7266",
+
+        // brand accents
         forest: {
-          DEFAULT: "#1F4A2C",
-          light: "#2E6540",
-          dark: "#123018",
+          DEFAULT: "#3F5C3A",
+          light: "#5A7A54",
+          dark: "#2C4128",
         },
         gold: {
           DEFAULT: "#B8923F",
-          light: "#D4B570",
-          dark: "#8F6E2A",
+          light: "#D4B876",
+          dark: "#8F6E2C",
         },
-        terracotta: {
-          DEFAULT: "#B5602F",
-          light: "#CE7C4B",
-        },
-        ink: "#2A2620",
-        muted: "#6E6656",
-      },
-      fontFamily: {
-        display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "sans-serif"],
-      },
-      backgroundImage: {
-        "leaf-corner": "radial-gradient(circle at top left, rgba(31,74,44,0.06), transparent 60%)",
       },
       boxShadow: {
-        soft: "0 8px 30px rgba(31,74,44,0.08)",
-        card: "0 4px 20px rgba(42,38,32,0.06)",
-      },
-      borderRadius: {
-        xl2: "1.25rem",
+        soft: "0 4px 20px rgba(42, 38, 32, 0.08)",
+        card: "0 8px 30px rgba(42, 38, 32, 0.10)",
       },
     },
   },

@@ -48,15 +48,15 @@ export default async function ProductDetailPage({ params }) {
       content:
         product.description ||
         product.shortDescription ||
-        "A premium handcrafted product from KMC Iyarkai Creation, made with natural, eco-friendly materials.",
+        "A premium product from Abi Foods and Oils, made with natural ingredients and traditional methods.",
     },
     {
       title: "Product Details",
       content: (
         <div className="flex flex-wrap gap-2">
-          {product.attributes?.handmade && <Tag label="Handmade with Care" />}
+          {product.attributes?.handmade && <Tag label="Traditionally Made" />}
           {product.attributes?.natural && <Tag label="100% Natural" />}
-          {product.attributes?.ecoFriendly && <Tag label="Eco-Friendly" />}
+          {product.attributes?.ecoFriendly && <Tag label="No Preservatives" />}
         </div>
       ),
     },

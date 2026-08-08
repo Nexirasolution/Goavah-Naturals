@@ -240,7 +240,7 @@ export default function AdminBannersPage() {
             <ImageUploader
               images={form.image}
               onChange={(imgs) => setForm({ ...form, image: imgs })}
-              folder="kmc-banners"
+              folder="abi-foods-banners"
               multiple={false}
             />
           </div>

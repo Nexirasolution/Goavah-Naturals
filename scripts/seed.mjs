@@ -1,5 +1,9 @@
-// Seed script — populates the database with KMC's real product categories
-// and a few starter products so the store isn't empty on first run.
+// Seed script — populates the database with Abi Foods & Oils' product
+// categories and starter products so the store isn't empty on first run.
+//
+// NOTE: Prices, units, and stock below are PLACEHOLDERS. Update them from
+// the admin panel (Products > Edit) or edit the PRODUCTS array below before
+// running this in production.
 //
 // Usage:  npm run seed
 // Requires MONGODB_URI to be set in .env.local
@@ -50,23 +54,170 @@ const Category = mongoose.models.Category || mongoose.model("Category", Category
 const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
 
 const CATEGORIES = [
-  { name: "Handmade Wire Bags", slug: "handmade-wire-bags", icon: "bag", sortOrder: 1, description: "Durable, reusable wire bags in various sizes and colors." },
-  { name: "Organic Fertilizers & Soil Enhancers", slug: "organic-fertilizers", icon: "drop", sortOrder: 2, description: "Vermicompost, cow dung manure, fish amino acid and more." },
-  { name: "Clay Products", slug: "clay-products", icon: "pot", sortOrder: 3, description: "Traditional handcrafted clay pots, cookware and decor." },
-  { name: "Wooden Products", slug: "wooden-products", icon: "wood", sortOrder: 4, description: "Handcrafted wooden items, kitchen utensils and decor." },
-  { name: "Handmade Wooden Toys & Miniatures", slug: "wooden-toys", icon: "wood", sortOrder: 5, description: "Safe, sustainable, educational wooden toys." },
-  { name: "Herbal Products", slug: "herbal-products", icon: "herb", sortOrder: 6, description: "Dried herbs, leaves and homemade health powders." },
+  {
+    name: "Cold-Pressed Marachekku Oils",
+    slug: "marachekku-oils",
+    icon: "drop",
+    sortOrder: 1,
+    description: "Traditional wood-pressed (marachekku) oils, extracted the natural way.",
+  },
+  {
+    name: "Spice & Masala Powders",
+    slug: "spice-masala-powders",
+    icon: "herb",
+    sortOrder: 2,
+    description: "Freshly ground sambar powder, curry masala, and everyday spice powders.",
+  },
+  {
+    name: "Health Mixes & Malts",
+    slug: "health-mixes-malts",
+    icon: "leaf",
+    sortOrder: 3,
+    description: "Nutritious home-style malts and mixes for daily wellness.",
+  },
+  {
+    name: "Raw Spices",
+    slug: "raw-spices",
+    icon: "root",
+    sortOrder: 4,
+    description: "Whole, unprocessed spices sourced directly from Erode.",
+  },
 ];
 
 const PRODUCTS = [
-  { name: "Fish Amino Acid (FAA) - 1 Litre", category: "organic-fertilizers", price: 250, unit: "1 litre", stock: 40, isFeatured: true, description: "100% natural organic plant growth promoter, suitable for home and terrace gardens." },
-  { name: "Vermicompost", category: "organic-fertilizers", price: 180, unit: "1 kg", stock: 60, isFeatured: false, description: "Natural soil conditioner rich in nutrients for healthy plant growth." },
-  { name: "Terracotta Water Storage Pot", category: "clay-products", price: 450, unit: "piece", stock: 15, isFeatured: true, description: "Traditional handcrafted clay pot that keeps water naturally cool." },
-  { name: "Clay Coffee Cup", category: "clay-products", price: 90, unit: "piece", stock: 50, isFeatured: false, description: "Eco-friendly handcrafted clay cup, perfect for your morning coffee." },
-  { name: "Wooden Spoon Set", category: "wooden-products", price: 320, unit: "set of 6", stock: 25, isFeatured: true, description: "Handcrafted wooden kitchen utensils, customized and durable." },
-  { name: "Handmade Wire Shopping Bag", category: "handmade-wire-bags", price: 220, unit: "piece", stock: 30, isFeatured: true, description: "Durable and reusable wire bag, available in various sizes and colors." },
-  { name: "Wooden Miniature Toy Set", category: "wooden-toys", price: 350, unit: "set", stock: 12, isFeatured: false, description: "Safe, child-friendly, traditional wooden toys." },
-  { name: "Dried Curry Leaves Powder", category: "herbal-products", price: 120, unit: "200 g", stock: 35, isFeatured: false, description: "Homemade herbal powder made from sun-dried curry leaves." },
+  // Cold-Pressed Marachekku Oils
+  {
+    name: "Vagai Marachekku Groundnut Oil",
+    category: "marachekku-oils",
+    price: 320,
+    unit: "1 litre",
+    stock: 30,
+    isFeatured: true,
+    description: "Traditional wood-pressed groundnut oil, cold-extracted to retain natural aroma and nutrition.",
+  },
+  {
+    name: "Vagai Marachekku Sesame Oil",
+    category: "marachekku-oils",
+    price: 340,
+    unit: "1 litre",
+    stock: 30,
+    isFeatured: true,
+    description: "Cold-pressed sesame (gingelly) oil, extracted using the traditional wooden churner method.",
+  },
+  {
+    name: "Vagai Marachekku Coconut Oil",
+    category: "marachekku-oils",
+    price: 300,
+    unit: "1 litre",
+    stock: 30,
+    isFeatured: true,
+    description: "Pure wood-pressed coconut oil, naturally extracted without heat or chemicals.",
+  },
+
+  // Spice & Masala Powders
+  {
+    name: "Sambar Powder",
+    category: "spice-masala-powders",
+    price: 90,
+    unit: "200 g",
+    stock: 40,
+    isFeatured: true,
+    description: "Home-style sambar powder blended from freshly roasted spices and lentils.",
+  },
+  {
+    name: "Curry Masala",
+    category: "spice-masala-powders",
+    price: 90,
+    unit: "200 g",
+    stock: 40,
+    isFeatured: false,
+    description: "Aromatic curry masala blend for everyday South Indian gravies and curries.",
+  },
+  {
+    name: "Coriander Powder",
+    category: "spice-masala-powders",
+    price: 70,
+    unit: "200 g",
+    stock: 40,
+    isFeatured: false,
+    description: "Freshly ground coriander powder with natural aroma, no additives.",
+  },
+  {
+    name: "Idli Podi",
+    category: "spice-masala-powders",
+    price: 90,
+    unit: "200 g",
+    stock: 35,
+    isFeatured: true,
+    description: "Traditional lentil and spice-based gunpowder, perfect with idli, dosa, or hot rice.",
+  },
+  {
+    name: "Curry Leaves Powder",
+    category: "spice-masala-powders",
+    price: 100,
+    unit: "150 g",
+    stock: 30,
+    isFeatured: false,
+    description: "Sun-dried curry leaves ground into a fragrant, nutrient-rich powder.",
+  },
+  {
+    name: "Turmeric Powder",
+    category: "spice-masala-powders",
+    price: 80,
+    unit: "200 g",
+    stock: 40,
+    isFeatured: false,
+    description: "Pure turmeric powder ground from naturally dried turmeric roots.",
+  },
+
+  // Health Mixes & Malts
+  {
+    name: "ABC Malt",
+    category: "health-mixes-malts",
+    price: 150,
+    unit: "250 g",
+    stock: 25,
+    isFeatured: true,
+    description: "Apple, Beetroot & Carrot malt — a nutritious home-style health drink mix.",
+  },
+  {
+    name: "Sweet Potato Powder",
+    category: "health-mixes-malts",
+    price: 130,
+    unit: "200 g",
+    stock: 20,
+    isFeatured: false,
+    description: "Naturally dried and ground sweet potato powder, rich in fibre and nutrients.",
+  },
+  {
+    name: "Health Mix Powder",
+    category: "health-mixes-malts",
+    price: 160,
+    unit: "250 g",
+    stock: 25,
+    isFeatured: true,
+    description: "Multi-grain and millet health mix, a wholesome breakfast or beverage base.",
+  },
+  {
+    name: "Kollukangi Mix",
+    category: "health-mixes-malts",
+    price: 140,
+    unit: "200 g",
+    stock: 20,
+    isFeatured: false,
+    description: "Horse gram (kollu) based traditional health mix, a natural source of protein.",
+  },
+
+  // Raw Spices
+  {
+    name: "Turmeric (Raw)",
+    category: "raw-spices",
+    price: 120,
+    unit: "500 g",
+    stock: 20,
+    isFeatured: false,
+    description: "Whole, sun-dried turmeric fingers sourced directly from local farms.",
+  },
 ];
 
 function slugify(text) {
@@ -114,7 +265,7 @@ async function seed() {
     console.log(`Created product: ${p.name}`);
   }
 
-  console.log("\nSeeding complete. Add product images from the admin panel (Products > Edit).");
+  console.log("\nSeeding complete. Add product images and confirm real prices from the admin panel (Products > Edit).");
   await mongoose.disconnect();
 }
 
