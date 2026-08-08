@@ -123,7 +123,7 @@ export default function Navbar({ settings }) {
               {searchOpen ? (
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="flex items-center overflow-hidden rounded-full border border-gold/30 bg-white pl-4 pr-1 py-1.5 transition-all"
+                  className="flex items-center overflow-hidden rounded-full border border-gray-200 bg-white pl-4 pr-1 py-1.5 shadow-sm transition-all"
                 >
                   <input
                     autoFocus
@@ -148,7 +148,7 @@ export default function Navbar({ settings }) {
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-forest transition hover:bg-champagne"
                   aria-label="Search"
                 >
                   <Search className="h-5 w-5" />
@@ -159,7 +159,7 @@ export default function Navbar({ settings }) {
             {/* Mobile search toggle icon (next to cart) */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-forest transition hover:bg-champagne md:hidden"
               aria-label="Search"
             >
               {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
@@ -208,7 +208,7 @@ export default function Navbar({ settings }) {
           <div className="border-t border-gold/20 bg-ivory px-5 py-3 md:hidden">
             <form
               onSubmit={handleSearchSubmit}
-              className="flex items-center gap-2 rounded-full border border-gold/30 bg-white px-4 py-2.5"
+              className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 shadow-sm"
             >
               <Search className="h-4 w-4 shrink-0 text-gray-400" />
               <input
