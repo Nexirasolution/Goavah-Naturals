@@ -12,14 +12,14 @@ export default function CartPage() {
 
   return (
     <section className="mx-auto max-w-5xl px-5 py-12 md:px-8">
-      <h1 className="font-display text-3xl font-bold text-forest">Your Cart</h1>
+      <h1 className="font-body italic text-3xl font-bold text-forest">Your Cart</h1>
 
       {items.length === 0 ? (
         <div className="mt-16 flex flex-col items-center py-10 text-center">
           <span className="badge-stamp flex h-16 w-16 items-center justify-center border-gold/40 bg-champagne text-forest">
             <BagIcon className="h-7 w-7" />
           </span>
-          <p className="mt-4 font-display text-lg text-forest">Your cart is empty</p>
+          <p className="mt-4 font-body italic text-lg text-forest">Your cart is empty</p>
           <Link
             href="/products"
             className="mt-6 rounded-full bg-forest px-8 py-3 text-sm font-semibold text-ivory shadow-soft transition hover:bg-forest-light"
@@ -45,7 +45,7 @@ export default function CartPage() {
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-display text-sm font-semibold text-ink">{item.name}</p>
+                  <p className="font-body italic text-sm font-semibold text-ink">{item.name}</p>
                   <p className="text-xs text-muted">₹{item.price} / {item.unit}</p>
                   <div className="mt-2 flex items-center rounded-full border border-gold/30 w-fit">
                     <button
@@ -64,7 +64,7 @@ export default function CartPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-display text-sm font-bold text-forest">₹{item.price * item.quantity}</p>
+                  <p className="font-body italic text-sm font-bold text-forest">₹{item.price * item.quantity}</p>
                   <button
                     onClick={() => removeItem(item.productId)}
                     className="mt-2 text-xs text-terracotta hover:underline"
@@ -77,7 +77,7 @@ export default function CartPage() {
           </div>
 
           <div className="h-fit rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
-            <h2 className="font-display text-lg font-bold text-forest">Order Summary</h2>
+            <h2 className="font-body italic text-lg font-bold text-forest">Order Summary</h2>
             <div className="mt-4 flex justify-between text-sm text-ink/80">
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
@@ -87,7 +87,7 @@ export default function CartPage() {
               <span className="text-forest">Calculated at checkout</span>
             </div>
             <div className="leaf-divider my-4" />
-            <div className="flex justify-between font-display text-base font-bold text-forest">
+            <div className="flex justify-between font-body italic text-base font-bold text-forest">
               <span>Total</span>
               <span>₹{subtotal}</span>
             </div>

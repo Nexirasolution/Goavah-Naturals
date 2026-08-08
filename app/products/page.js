@@ -16,8 +16,8 @@ export default async function ProductsPage({ searchParams }) {
       <Navbar settings={settings} />
       <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
         <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">Our Collection</p>
-          <h1 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+          <p className="font-body italic text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">Our Collection</p>
+          <h1 className="mt-2 font-body italic text-3xl font-bold text-forest md:text-4xl">
             Wood Cold-Pressed Oils &amp; Traditional Spice Powders
           </h1>
         </div>

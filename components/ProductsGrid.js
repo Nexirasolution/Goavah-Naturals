@@ -199,7 +199,7 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
         </div>
       ) : products.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="font-display text-lg text-forest">No products found</p>
+          <p className="font-body italic text-lg text-forest">No products found</p>
           <p className="mt-1 text-sm text-muted">Try a different category or search term.</p>
         </div>
       ) : (

@@ -194,23 +194,23 @@ export default function CheckoutPage() {
           <span className="badge-stamp mx-auto flex h-16 w-16 items-center justify-center border-gold/40 bg-forest text-ivory">
             ✓
           </span>
-          <h1 className="mt-6 font-display text-3xl font-bold text-forest">Order Placed!</h1>
+          <h1 className="mt-6 font-body italic text-3xl font-bold text-forest">Order Placed!</h1>
           <p className="mt-3 text-muted">
             Thank you for choosing {settings.storeName || "Abi Foods and Oils"}. Your order number is:
           </p>
-          <p className="mt-2 font-display text-xl font-bold text-terracotta">{placedOrder.orderNumber}</p>
+          <p className="mt-2 font-body italic text-xl font-bold text-terracotta">{placedOrder.orderNumber}</p>
           <p className="mt-4 text-sm text-muted">
             Save this number, or use your phone number, to track your order anytime.
           </p>
           <div className="mt-8 flex justify-center gap-4">
-            
-            <a  href="/track-order"
+            <a
+              href="/track-order"
               className="rounded-full border border-forest/30 px-8 py-3 text-sm font-semibold text-forest hover:bg-champagne"
             >
               Track Order
             </a>
-            
-             <a href="/products"
+            <a
+              href="/products"
               className="rounded-full bg-forest px-8 py-3 text-sm font-semibold text-ivory shadow-soft hover:bg-forest-light"
             >
               Continue Shopping
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <Navbar settings={settings} />
       <section className="mx-auto max-w-4xl px-5 py-12 md:px-8">
-        <h1 className="font-display text-3xl font-bold text-forest">Checkout</h1>
+        <h1 className="font-body italic text-3xl font-bold text-forest">Checkout</h1>
 
         {items.length === 0 ? (
           <p className="mt-8 text-muted">Your cart is empty. <a href="/products" className="text-forest underline">Shop now</a></p>
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="h-fit rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
-              <h2 className="font-display text-lg font-bold text-forest">Order Summary</h2>
+              <h2 className="font-body italic text-lg font-bold text-forest">Order Summary</h2>
               <div className="mt-4 space-y-2">
                 {items.map((item) => (
                   <div key={item.productId} className="flex justify-between text-sm text-ink/80">
@@ -307,7 +307,7 @@ export default function CheckoutPage() {
                 <span>Shipping ({form.state})</span>
                 <span>{shippingFee === 0 ? "Free" : `₹${shippingFee}`}</span>
               </div>
-              <div className="mt-2 flex justify-between font-display text-base font-bold text-forest">
+              <div className="mt-2 flex justify-between font-body italic text-base font-bold text-forest">
                 <span>Total</span>
                 <span>₹{total}</span>
               </div>

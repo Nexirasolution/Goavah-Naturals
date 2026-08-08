@@ -26,7 +26,7 @@ export default function AdminLayout({ children }) {
             <Menu size={30} />
           </button>
 
-          <h1 className="text-2xl font-bold text-green-700">
+          <h1 className="text-2xl font-bold text-forest">
             Abi Foods Admin
           </h1>
         </div>

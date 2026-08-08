@@ -53,10 +53,10 @@ export default async function CategoriesPage({ searchParams }) {
 
       <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-16">
         <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
+          <p className="font-body italic text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
             Browse
           </p>
-          <h1 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+          <h1 className="mt-2 font-body italic text-3xl font-bold text-forest md:text-4xl">
             All Categories
           </h1>
         </div>

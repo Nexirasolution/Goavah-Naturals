@@ -27,7 +27,7 @@ function ShippingMarquee({ settings }) {
   const track = [...messages, ...messages];
 
   return (
-    <div className="relative overflow-hidden bg-green-700 py-2 text-ivory">
+    <div className="relative overflow-hidden bg-forest py-2 text-ivory">
       <div className="marquee-track flex w-max items-center gap-12 whitespace-nowrap px-4 text-xs font-semibold tracking-wide md:text-sm">
         {track.map((msg, idx) => (
           <span key={idx} className="flex items-center gap-2">
@@ -94,11 +94,11 @@ export default function Navbar({ settings }) {
             />
 
             <div className="leading-tight">
-              <h1 className="font-display text-xl font-bold text-forest">
+              <h1 className="font-display text-xl font-bold uppercase italic text-forest">
                 {brand}
               </h1>
               {tagline && (
-                <p className="text-xs uppercase tracking-[0.25em] text-muted">
+                <p className="text-xs italic uppercase tracking-[0.25em] text-muted">
                   {tagline}
                 </p>
               )}

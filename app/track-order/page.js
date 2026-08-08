@@ -60,10 +60,10 @@ export default function TrackOrderPage() {
       <Navbar settings={settings} />
       <section className="mx-auto max-w-3xl px-5 py-12 md:px-8">
         <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
+          <p className="font-body italic text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
             Order Status
           </p>
-          <h1 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">Track Your Order</h1>
+          <h1 className="mt-2 font-body italic text-3xl font-bold text-forest md:text-4xl">Track Your Order</h1>
           <p className="mt-3 text-sm text-muted">
             Enter the phone number used while placing your order.
           </p>
@@ -102,7 +102,7 @@ export default function TrackOrderPage() {
               <div key={order._id} className="rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="font-display text-lg font-bold text-forest">{order.orderNumber}</p>
+                    <p className="font-body italic text-lg font-bold text-forest">{order.orderNumber}</p>
                     <p className="text-xs text-muted">
                       Placed on {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
@@ -163,8 +163,8 @@ export default function TrackOrderPage() {
                         )}
                       </div>
                       {order.tracking.trackingUrl && (
-                        
-                        <a  href={order.tracking.trackingUrl}
+                        <a
+                          href={order.tracking.trackingUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="mt-3 inline-block rounded-full bg-forest px-5 py-2 text-xs font-semibold text-ivory shadow-soft transition hover:bg-forest-light"
@@ -186,7 +186,7 @@ export default function TrackOrderPage() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 flex justify-between font-display text-sm font-bold text-forest">
+                <div className="mt-3 flex justify-between font-body italic text-sm font-bold text-forest">
                   <span>Total</span>
                   <span>₹{order.total}</span>
                 </div>

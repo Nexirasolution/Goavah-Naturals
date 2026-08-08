@@ -59,7 +59,7 @@ export default async function HomePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
             Wood Pressed &middot; Farm Fresh
           </p>
-          <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+          <h2 className="mt-2 font-body text-3xl font-bold italic text-forest md:text-4xl">
             Shop by Category
           </h2>
         </div>
@@ -104,7 +104,7 @@ export default async function HomePage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
                   Customer Favorites
                 </p>
-                <h2 className="mt-2 font-display text-3xl font-bold text-forest md:text-4xl">
+                <h2 className="mt-2 font-body text-3xl font-bold italic text-forest md:text-4xl">
                   Best Selling Products
                 </h2>
               </div>
@@ -122,7 +122,7 @@ export default async function HomePage() {
             <div className="mt-10 flex justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3 text-sm font-semibold text-white transition hover:bg-forest/90"
+                className="inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3 font-body text-sm font-semibold italic text-white transition hover:bg-forest/90"
               >
                 Shop Now
                 <span aria-hidden="true">&rarr;</span>
@@ -135,7 +135,7 @@ export default async function HomePage() {
       {/* Why choose us */}
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
         <div className="mb-10 text-center">
-          <h2 className="font-display text-3xl font-bold text-forest md:text-4xl">Why Choose Us?</h2>
+          <h2 className="font-body text-3xl font-bold italic text-forest md:text-4xl">Why Choose Us?</h2>
         </div>
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {WHY_CHOOSE.map((item) => (
@@ -143,16 +143,14 @@ export default async function HomePage() {
               <span className="badge-stamp mx-auto flex h-16 w-16 items-center justify-center border-gold/40 bg-forest text-ivory">
                 <LeafIcon className="h-7 w-7" />
               </span>
-              <p className="mt-4 font-display text-sm font-bold text-ink">{item.title}</p>
+              <p className="mt-4 font-body text-sm font-bold italic text-ink">{item.title}</p>
               <p className="mt-1 text-xs text-muted">{item.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      
-
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }

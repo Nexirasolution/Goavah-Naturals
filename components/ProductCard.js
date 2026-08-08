@@ -19,7 +19,7 @@ export default function ProductCard({ product }) {
     : 0;
 
   return (
-    <div className="card-hover group relative flex flex-col overflow-hidden rounded-xl2 border border-gold/15 bg-white shadow-card">
+    <div className="card-hover group relative flex flex-col overflow-hidden rounded-3xl border border-gold/15 bg-white shadow-card">
       <Link href={`/products/${product.slug}`} className="relative block aspect-square overflow-hidden bg-champagne">
         {image ? (
           mediaType === "video" ? (
@@ -64,14 +64,14 @@ export default function ProductCard({ product }) {
           {product.category?.name}
         </p>
         <Link href={`/products/${product.slug}`}>
-          <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] font-display text-base font-semibold leading-snug text-ink hover:text-forest">
+          <h3 className="mt-1 line-clamp-2 min-h-[2.5rem] font-body italic text-base font-semibold leading-snug text-ink hover:text-forest">
             {product.name}
           </h3>
         </Link>
         <div className="mt-auto flex items-center justify-between pt-4">
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="font-display text-lg font-bold text-forest">₹{product.price}</span>
+              <span className="font-body italic text-lg font-bold text-forest">₹{product.price}</span>
               {hasDiscount && (
                 <span className="text-xs text-muted line-through">₹{product.compareAtPrice}</span>
               )}

@@ -75,11 +75,11 @@ export default function Footer({ settings }) {
   ].filter((s) => s.href);
 
   return (
-    <footer className="bg-green-900 text-white py-12">
+    <footer className="bg-forest-dark text-ivory py-12">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Column 1 - Brand & Contact */}
         <div>
-          <div className="flex items-center gap-4 mb-5">
+          <div className="flex flex-col items-center gap-3 mb-5 text-center md:items-start md:text-left">
             <Image
               src="/images/logo.png"
               alt={`${storeName} Logo`}
@@ -88,15 +88,15 @@ export default function Footer({ settings }) {
               className="rounded-full object-contain"
             />
 
-            <h2 className="text-2xl font-semibold">{storeName}</h2>
+            <h2 className="text-2xl font-semibold uppercase italic">{storeName}</h2>
           </div>
 
-          <p className="text-green-100 leading-relaxed max-w-md">
+          <p className="text-champagne leading-relaxed max-w-md">
             Fresh, traditionally made oils and food products from Erode.
             Cold-pressed marachekku oils and natural home-style powders.
           </p>
 
-          <div className="mt-6 space-y-3 text-green-100">
+          <div className="mt-6 space-y-3 text-champagne">
             {phone && (
               <p className="flex items-center gap-2">
                 <PhoneIcon className="w-5 h-5" />
@@ -119,11 +119,11 @@ export default function Footer({ settings }) {
             )}
 
             {settings?.gst && (
-              <p className="text-sm text-green-200">GST No: {settings.gst}</p>
+              <p className="text-sm text-champagne/70">GST No: {settings.gst}</p>
             )}
 
             {settings?.msme && (
-              <p className="text-sm text-green-200">MSME Registration: {settings.msme}</p>
+              <p className="text-sm text-champagne/70">MSME Registration: {settings.msme}</p>
             )}
 
             {whatsapp && (
@@ -131,7 +131,7 @@ export default function Footer({ settings }) {
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-green-300 transition"
+                className="flex items-center gap-2 hover:text-gold-light transition"
               >
                 <WhatsappIcon className="w-5 h-5" />
                 WhatsApp Us
@@ -149,12 +149,12 @@ export default function Footer({ settings }) {
                   rel="noopener noreferrer"
                   title={label}
                   aria-label={label}
-                  className="flex flex-col items-center gap-1 text-green-100 hover:text-green-300 hover:-translate-y-0.5 transition-transform text-xs font-medium"
+                  className="flex flex-col items-center gap-1 text-champagne hover:text-gold-light hover:-translate-y-0.5 transition-transform text-xs font-medium"
                 >
                   {Icon ? (
                     <Icon className="w-12 h-12 drop-shadow-md" />
                   ) : (
-                    <span className="w-11 h-11 flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] font-bold">
+                    <span className="w-11 h-11 flex items-center justify-center rounded-full bg-terracotta text-white text-[10px] font-bold">
                       YT
                     </span>
                   )}
@@ -167,7 +167,7 @@ export default function Footer({ settings }) {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-green-700 mt-10 pt-5 text-center text-sm text-green-200">
+      <div className="border-t border-gold/20 mt-10 pt-5 text-center text-sm text-champagne/70">
         <p>
           © {new Date().getFullYear()} {storeName}. All rights reserved.
         </p>
@@ -178,7 +178,7 @@ export default function Footer({ settings }) {
             href="https://www.nexirasolution.in/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-green-300 hover:text-white hover:underline transition"
+            className="font-semibold text-gold-light hover:text-ivory hover:underline transition"
           >
             Nexira Solution
           </a>
