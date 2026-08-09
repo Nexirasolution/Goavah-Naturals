@@ -125,14 +125,14 @@ export default function AdminCategoriesPage() {
             return (
               <div
                 key={c._id}
-                className="rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
+                className="w-full min-w-0 overflow-hidden rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
                   {/* Left Side */}
-                  <div className="flex items-center gap-4 flex-1">
+                  <div className="flex min-w-0 flex-1 items-center gap-4">
 
-                    <button className="hidden md:block text-gray-400 text-2xl">
+                    <button className="hidden md:block shrink-0 text-gray-400 text-2xl">
                       ›
                     </button>
 
@@ -140,20 +140,20 @@ export default function AdminCategoriesPage() {
                       <img
                         src={c.image.url}
                         alt={c.name}
-                        className="h-16 w-16 rounded-full object-cover border border-gray-200"
+                        className="h-16 w-16 shrink-0 rounded-full object-cover border border-gray-200"
                       />
                     ) : (
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-champagne">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-champagne">
                         <Icon className="h-7 w-7 text-forest" />
                       </div>
                     )}
 
-                    <div className="min-w-0">
-                      <h2 className="font-display text-lg md:text-xl font-bold text-ink">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="font-display text-lg md:text-xl font-bold text-ink truncate">
                         {c.name}
                       </h2>
 
-                      <p className="text-sm text-muted">
+                      <p className="truncate text-sm text-muted">
                         /{c.name.toLowerCase().replace(/\s+/g, "-")}
                       </p>
 
@@ -166,7 +166,7 @@ export default function AdminCategoriesPage() {
                   </div>
 
                   {/* Right Side */}
-                  <div className="flex items-center justify-end gap-5">
+                  <div className="flex shrink-0 items-center justify-end gap-5">
 
                     <button
                       title="Edit"

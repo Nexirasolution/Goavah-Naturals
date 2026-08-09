@@ -36,7 +36,12 @@ export default function AdminLayout({ children }) {
       <AdminSidebar open={open} setOpen={setOpen} />
 
       {/* Main Content */}
-      <main className="flex-1 min-h-screen p-4 pt-20 lg:ml-64 lg:p-6 lg:pt-6">
+      {/* min-w-0 is required here: flex items default to min-width:auto,
+          which lets them refuse to shrink below their content's natural
+          width and silently overflow the page horizontally. Without this,
+          any wide content inside (like the Banners list) pushes the whole
+          layout wider than the viewport instead of wrapping/truncating. */}
+      <main className="min-w-0 flex-1 min-h-screen overflow-x-hidden p-4 pt-20 lg:ml-64 lg:p-6 lg:pt-6">
         {children}
       </main>
     </div>

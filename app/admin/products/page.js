@@ -277,39 +277,42 @@ export default function AdminProductsPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Header */}
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-forest">Products</h1>
+          <h1 className="font-body italic text-xl font-bold text-forest sm:text-2xl">Products</h1>
           <p className="mt-1 text-sm text-muted">
             {pagination ? `${pagination.total} products total` : "Loading..."}
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <input
-            type="text"
-            placeholder="Search by name or SKU..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="rounded-full border border-gold/30 bg-white px-4 py-2 text-sm outline-none focus:border-forest"
-          />
+
+        <input
+          type="text"
+          placeholder="Search by name or SKU..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-full border border-gold/30 bg-white px-4 py-2.5 text-sm outline-none focus:border-forest sm:max-w-xs"
+        />
+
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
           <button
             onClick={exportExcel}
             disabled={exporting}
-            className="rounded-full border border-gold/40 px-5 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50"
+            className="rounded-full border border-gold/40 px-4 py-2 text-xs font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50 sm:px-5 sm:text-sm"
           >
             {exporting ? "Exporting..." : "Export Excel"}
           </button>
           <button
             onClick={exportPDF}
             disabled={exporting}
-            className="rounded-full border border-gold/40 px-5 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50"
+            className="rounded-full border border-gold/40 px-4 py-2 text-xs font-semibold text-gold-dark hover:bg-gold/5 disabled:opacity-50 sm:px-5 sm:text-sm"
           >
             {exporting ? "Exporting..." : "Export PDF"}
           </button>
           <button
             onClick={() => setBulkOpen(true)}
             disabled={categories.length === 0}
-            className="rounded-full border border-forest px-6 py-2 text-sm font-semibold text-forest hover:bg-forest/5 disabled:opacity-50"
+            className="rounded-full border border-forest px-4 py-2 text-xs font-semibold text-forest hover:bg-forest/5 disabled:opacity-50 sm:px-6 sm:text-sm"
             title={categories.length === 0 ? "Add a category first" : ""}
           >
             Bulk Upload
@@ -317,7 +320,7 @@ export default function AdminProductsPage() {
           <button
             onClick={openAdd}
             disabled={categories.length === 0}
-            className="rounded-full bg-forest px-6 py-2 text-sm font-semibold text-ivory shadow-soft hover:bg-forest-light disabled:opacity-50"
+            className="rounded-full bg-forest px-4 py-2 text-xs font-semibold text-ivory shadow-soft hover:bg-forest-light disabled:opacity-50 sm:px-6 sm:text-sm"
             title={categories.length === 0 ? "Add a category first" : ""}
           >
             + Add Product
@@ -325,7 +328,8 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-xl2 border border-gold/15 bg-white shadow-card">
+      {/* Desktop / tablet table */}
+      <div className="mt-6 hidden overflow-x-auto rounded-xl2 border border-gold/15 bg-white shadow-card md:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-gold/15 bg-champagne/50 text-xs uppercase tracking-wide text-muted">
             <tr>
@@ -391,6 +395,75 @@ export default function AdminProductsPage() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {loading ? (
+          <div className="rounded-xl2 border border-gold/15 bg-white p-6 text-center text-sm text-muted shadow-card">
+            Loading...
+          </div>
+        ) : products.length === 0 ? (
+          <div className="rounded-xl2 border border-gold/15 bg-white p-6 text-center text-sm text-muted shadow-card">
+            {search ? "No products match your search." : "No products yet. Add your first product."}
+          </div>
+        ) : (
+          products.map((p) => (
+            <div
+              key={p._id}
+              className="rounded-xl2 border border-gold/15 bg-white p-4 shadow-card"
+            >
+              <div className="flex items-start gap-3">
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-champagne">
+                  {p.media?.[0] &&
+                    (p.media[0].type === "video" ? (
+                      <video src={p.media[0].url} className="h-full w-full object-cover" muted />
+                    ) : (
+                      <Image
+                        src={p.media[0].url}
+                        alt=""
+                        width={56}
+                        height={56}
+                        className="h-full w-full object-cover"
+                      />
+                    ))}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="truncate font-medium text-ink">{p.name}</p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+                        p.isActive ? "bg-forest/10 text-forest" : "bg-muted/10 text-muted"
+                      }`}
+                    >
+                      {p.isActive ? "Active" : "Hidden"}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 font-mono text-[11px] text-ink/50">{p.sku}</p>
+                  <p className="mt-0.5 text-xs text-ink/70">{p.category?.name}</p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between border-t border-gold/10 pt-3">
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="font-semibold text-forest">₹{p.price}</span>
+                  <span className={p.stock <= p.lowStockThreshold ? "font-semibold text-terracotta" : "text-ink/70"}>
+                    Stock: {p.stock}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => openEdit(p)} className="text-xs font-semibold text-forest hover:underline">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(p._id)} className="text-xs font-semibold text-terracotta hover:underline">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {pagination && pagination.totalPages > 1 && (
@@ -467,7 +540,7 @@ export default function AdminProductsPage() {
             </select>
           </label>
 
-          <div className="grid gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <FormField label="Price (₹)" required type="number" value={form.price} onChange={(v) => setForm({ ...form, price: v })} />
             <FormField label="Compare Price" type="number" value={form.compareAtPrice} onChange={(v) => setForm({ ...form, compareAtPrice: v })} />
             <FormField label="Unit" value={form.unit} onChange={(v) => setForm({ ...form, unit: v })} placeholder="e.g. 1 L / 500 g" />
@@ -497,7 +570,7 @@ export default function AdminProductsPage() {
               />          
               </label>
 
-          <div className="flex gap-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} />
               Featured on homepage

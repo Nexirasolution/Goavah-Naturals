@@ -144,10 +144,10 @@ export default function AdminBannersPage() {
           banners.map((b) => (
             <div
               key={b._id}
-              className="rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
+              className="w-full min-w-0 overflow-hidden rounded-3xl border border-gold/10 bg-white p-4 md:p-5 shadow-card hover:shadow-lg transition"
             >
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
+              <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex min-w-0 flex-1 items-center gap-4">
                   <div className="h-20 w-32 shrink-0 overflow-hidden rounded-xl bg-champagne">
                     {b.image?.url ? (
                       <Image
@@ -164,20 +164,20 @@ export default function AdminBannersPage() {
                     )}
                   </div>
 
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <h2 className="font-display text-lg font-bold text-ink truncate">{b.title}</h2>
                     {b.subtitle && (
                       <p className="mt-1 line-clamp-2 text-sm text-muted">{b.subtitle}</p>
                     )}
                     {b.ctaText && (
-                      <p className="mt-1 text-xs text-gold-dark font-medium">
+                      <p className="mt-1 truncate text-xs text-gold-dark font-medium">
                         CTA: {b.ctaText} → {b.ctaLink || "(no link)"}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-4">
+                <div className="flex shrink-0 items-center justify-end gap-4">
                   <button
                     onClick={() => toggleActive(b)}
                     className={`rounded-full px-3 py-1 text-xs font-medium ${
