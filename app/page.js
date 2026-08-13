@@ -180,7 +180,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/products"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3 font-body text-sm font-semibold text-ink transition hover:bg-gold-light"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-ivory px-8 py-3 font-body text-sm font-semibold text-forest transition hover:bg-champagne"
           >
             Explore Products
             <span aria-hidden="true">&rarr;</span>

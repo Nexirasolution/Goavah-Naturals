@@ -57,7 +57,6 @@ function ShippingMarquee({ settings }) {
 export default function Navbar({ settings }) {
   const { count } = useCart();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const storeName = settings?.storeName || "Goavah Naturals";
@@ -70,7 +69,6 @@ export default function Navbar({ settings }) {
     if (query.trim()) {
       router.push(`/products?search=${encodeURIComponent(query.trim())}`);
       setSearchOpen(false);
-      setOpen(false);
       setQuery("");
     }
   };
@@ -179,29 +177,6 @@ export default function Navbar({ settings }) {
                 </span>
               )}
             </Link>
-            <button
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 md:hidden"
-              onClick={() => setOpen(!open)}
-              aria-label="Toggle menu"
-            >
-              <div className="flex flex-col justify-between h-4 w-5">
-                <span
-                  className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-                    open ? "translate-y-[7px] rotate-45" : ""
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-                    open ? "opacity-0" : ""
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-5 bg-ink transition-all duration-300 ${
-                    open ? "-translate-y-[7px] -rotate-45" : ""
-                  }`}
-                />
-              </div>
-            </button>
           </div>
         </div>
 
@@ -222,21 +197,6 @@ export default function Navbar({ settings }) {
               />
             </form>
           </div>
-        )}
-
-        {open && (
-          <nav className="flex flex-col gap-1 border-t border-gold/20 bg-ivory px-5 py-3 md:hidden">
-            {LINKS.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2 font-body text-sm font-medium text-ink/80 hover:bg-champagne"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
         )}
       </header>
     </>

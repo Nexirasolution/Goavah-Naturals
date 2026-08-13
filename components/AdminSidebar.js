@@ -94,7 +94,7 @@ export default function AdminSidebar({ open, setOpen }) {
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition
                   ${
                     active
-                      ? "bg-gold text-forest-dark"
+                      ? "bg-white text-forest-dark"
                       : "text-ivory/80 hover:bg-white/10"
                   }`}
               >
@@ -112,7 +112,7 @@ export default function AdminSidebar({ open, setOpen }) {
         <div className="border-t border-white/10 p-3">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-ivory/80 transition hover:bg-white/10"
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-ivory transition hover:bg-white/10"
           >
             <span>⏻</span>
             Logout
