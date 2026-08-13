@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import ProductsGrid from "@/components/ProductsGrid";
 import { getSettings } from "@/lib/settings";
 
-export const metadata = { title: "Shop | Abi Foods and Oils" };
+export const metadata = { title: "Shop | Goavah Naturals" };
 
 export default async function ProductsPage({ searchParams }) {
   const sp = await searchParams;
@@ -18,7 +18,7 @@ export default async function ProductsPage({ searchParams }) {
         <div className="mb-10 text-center">
           <p className="font-body italic text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">Our Collection</p>
           <h1 className="mt-2 font-body italic text-3xl font-bold text-forest md:text-4xl">
-            Wood Cold-Pressed Oils &amp; Traditional Spice Powders
+            Natural Wellness, Skincare &amp; Spiritual Products
           </h1>
         </div>
         <ProductsGrid initialCategory={category} initialSearch={search} />

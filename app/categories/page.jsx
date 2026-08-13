@@ -1,24 +1,22 @@
 // app/categories/page.jsx
 import Link from "next/link";
-import Image from "next/image";
 import { connectDB } from "@/lib/mongodb";
 import Category from "@/models/Category";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getSettings } from "@/lib/settings";
+import { Plus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-const CATEGORY_IMAGES = {
-  "Cold-Pressed Oils": "/categroy/cold-pressed-oils.png",
-  "Sambar & Curry Masalas": "/categroy/masala-powders.png",
-  "Spice Powders": "/categroy/spice-powders.png",
-  "Health Mix & Malt": "/categroy/health-mix.png",
-  "Traditional Podi": "/categroy/podi.png",
-  "Turmeric & Roots": "/categroy/turmeric.png",
-};
+const PAGE_SIZE = 24;
 
-const PAGE_SIZE = 18;
+const PROMO_TILES = [
+  { label: "Shop All", sub: "Every product", href: "/products", tone: "bg-forest" },
+  { label: "Best Sellers", sub: "Customer favorites", href: "/products?featured=true", tone: "bg-gold-dark" },
+  { label: "Your Cart", sub: "Review & checkout", href: "/cart", tone: "bg-champagne" },
+  { label: "Track Order", sub: "Where's my order", href: "/track-order", tone: "bg-ink" },
+];
 
 async function getCategories() {
   await connectDB();
@@ -29,8 +27,8 @@ async function getCategories() {
 }
 
 export const metadata = {
-  title: "Shop by Category | Abi Foods and Oils",
-  description: "Browse all product categories — wood cold-pressed oils and traditional spice powders.",
+  title: "Shop by Category | Goavah Naturals",
+  description: "Browse all product categories — natural food products and spiritual products.",
 };
 
 export default async function CategoriesPage({ searchParams }) {
@@ -51,54 +49,82 @@ export default async function CategoriesPage({ searchParams }) {
     <>
       <Navbar settings={settings} />
 
-      <section className="mx-auto max-w-7xl px-5 py-10 md:px-8 md:py-16">
-        <div className="mb-10 text-center">
-          <p className="font-body italic text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
-            Browse
-          </p>
-          <h1 className="mt-2 font-body italic text-3xl font-bold text-forest md:text-4xl">
-            All Categories
-          </h1>
-        </div>
+      <section className="border-b border-gold/15 px-5 py-6 md:px-8 md:py-8">
+        <p className="font-body text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-dark">
+          Browse
+        </p>
+        <h1 className="mt-1 font-display text-2xl italic text-forest md:text-3xl">
+          All Categories
+        </h1>
+      </section>
 
-        {allCategories.length === 0 ? (
-          <p className="text-center text-muted">
-            Categories will appear here once added from the admin panel.
-          </p>
-        ) : (
-          <>
-            <div className="grid grid-cols-3 gap-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-              {categories.map((cat) => (
+      {allCategories.length === 0 ? (
+        <p className="px-5 py-14 text-center text-muted">
+          Categories will appear here once added from the admin panel.
+        </p>
+      ) : (
+        <>
+          {/* Flat list, mega-menu style */}
+          <nav aria-label="Category list" className="px-5 md:px-8">
+            <Link
+              href="/products"
+              className="flex items-center justify-between border-b border-gold/15 py-4 transition hover:bg-champagne/20 md:py-5"
+            >
+              <span className="font-display text-lg italic text-forest md:text-xl">
+                All Products
+              </span>
+              <Plus className="h-5 w-5 shrink-0 text-gold-dark" strokeWidth={2} />
+            </Link>
+
+            {categories.map((cat) => (
+              <Link
+                key={cat._id}
+                href={`/products?category=${cat._id}`}
+                className="flex items-center justify-between border-b border-gold/15 py-4 transition hover:bg-champagne/20 md:py-5"
+              >
+                <span className="font-display text-lg italic text-forest md:text-xl">
+                  {cat.name}
+                </span>
+                <Plus className="h-5 w-5 shrink-0 text-gold-dark" strokeWidth={2} />
+              </Link>
+            ))}
+          </nav>
+
+          {totalPages > 1 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          )}
+
+          {/* Promo tile strip */}
+          <section className="mt-8 border-t border-gold/15 bg-champagne/15 px-5 py-6 md:px-8 md:py-8">
+            <div className="flex gap-4 overflow-x-auto pb-1">
+              {PROMO_TILES.map((tile) => (
                 <Link
-                  key={cat._id}
-                  href={`/products?category=${cat._id}`}
-                  className="group flex flex-col items-center"
+                  key={tile.label}
+                  href={tile.href}
+                  className={`group flex h-28 w-28 shrink-0 flex-col justify-end overflow-hidden p-3 shadow-soft transition hover:opacity-90 md:h-32 md:w-36 ${tile.tone}`}
                 >
-                  <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
-                    <Image
-                      src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-                      alt={cat.name}
-                      fill
-                      sizes="(max-width:768px) 96px, 112px"
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <h3 className="mt-3 text-center text-sm font-semibold text-ink transition group-hover:text-forest md:text-base">
-                    {cat.name}
-                  </h3>
+                  <span
+                    className={`font-display text-sm italic leading-tight md:text-base ${
+                      tile.tone === "bg-champagne" ? "text-ink" : "text-ivory"
+                    }`}
+                  >
+                    {tile.label}
+                  </span>
+                  <span
+                    className={`mt-0.5 font-body text-[10px] leading-tight ${
+                      tile.tone === "bg-champagne" ? "text-ink/60" : "text-ivory/70"
+                    }`}
+                  >
+                    {tile.sub}
+                  </span>
                 </Link>
               ))}
             </div>
+          </section>
+        </>
+      )}
 
-            {totalPages > 1 && (
-              <Pagination currentPage={currentPage} totalPages={totalPages} />
-            )}
-          </>
-        )}
-      </section>
-
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }
@@ -107,7 +133,7 @@ function Pagination({ currentPage, totalPages }) {
   const pages = getPageNumbers(currentPage, totalPages);
 
   return (
-    <nav className="mt-12 flex items-center justify-center gap-2">
+    <nav className="mt-10 flex flex-wrap items-center justify-center gap-2 px-4">
       <PageLink
         page={currentPage - 1}
         disabled={currentPage === 1}
@@ -116,7 +142,7 @@ function Pagination({ currentPage, totalPages }) {
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`dots-${i}`} className="px-2 text-sm text-muted">
+          <span key={`dots-${i}`} className="px-2 font-body text-sm text-muted">
             …
           </span>
         ) : (
@@ -136,7 +162,7 @@ function Pagination({ currentPage, totalPages }) {
 function PageLink({ page, label, active, disabled }) {
   if (disabled) {
     return (
-      <span className="rounded-full px-4 py-2 text-sm font-medium text-muted/40">
+      <span className="rounded-full px-4 py-2 font-body text-sm font-medium text-muted/40">
         {label}
       </span>
     );
@@ -145,10 +171,10 @@ function PageLink({ page, label, active, disabled }) {
   return (
     <Link
       href={page <= 1 ? "/categories" : `/categories?page=${page}`}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+      className={`rounded-full border px-4 py-2 font-body text-sm font-medium transition ${
         active
-          ? "bg-forest text-ivory"
-          : "text-ink/70 hover:bg-champagne"
+          ? "border-gold/40 bg-forest text-ivory"
+          : "border-gold/20 text-ink/70 hover:bg-champagne"
       }`}
     >
       {label}

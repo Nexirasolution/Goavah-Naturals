@@ -20,10 +20,10 @@ const inter = Inter({
 export async function generateMetadata() {
   const settings = await getSettings();
   return {
-    title: settings.seoTitle || "Abi Foods and Oils | Wood Cold-Pressed Oils & Traditional Spice Powders",
+    title: settings.seoTitle || "Goavah Naturals | Natural & Traditional Products",
     description:
       settings.seoDescription ||
-      "Abi Foods and Oils — wood cold-pressed groundnut, sesame & coconut oils and traditional spice powders, made in Kosakattur, Kodumudi, Erode.",
+      "Goavah Naturals — natural, traditionally made products from Zamin Uthukuli, Pollachi, Coimbatore District.",
     icons: {
       icon: "/images/logo.png",
       shortcut: "/images/logo.png",

@@ -10,11 +10,11 @@ const StateShippingRateSchema = new mongoose.Schema(
 
 const SettingsSchema = new mongoose.Schema(
   {
-    storeName: { type: String, default: "Abi Foods & Oils" },
-    email: { type: String, default: "abifoodsandoils@gmail.com" },
-    phone: { type: String, default: "+91 9344936684" },
-    whatsapp: { type: String, default: "919344936684" },
-    address: { type: String, default: "Kosakattur, Kodumudi, Erode, Tamil Nadu" },
+    storeName: { type: String, default: "Goavah Naturals" },
+    email: { type: String, default: "goavahnaturals@gmail.com" },
+    phone: { type: String, default: "+91 9626200999" },
+    whatsapp: { type: String, default: "919626200999" },
+    address: { type: String, default: "Zamin Uthukuli, Pollachi, Coimbatore District, Tamil Nadu - 642004" },
 
     // Default/fallback fee used when the customer's state has no specific rate below.
     shippingFee: { type: Number, default: 49 },
@@ -29,11 +29,11 @@ const SettingsSchema = new mongoose.Schema(
     facebook: { type: String, default: "" },
     youtube: { type: String, default: "" },
 
-    seoTitle: { type: String, default: "Abi Foods & Oils | Cold-Pressed Marachekku Oils & Traditional Powders" },
+    seoTitle: { type: String, default: "Goavah Naturals | Natural & Traditional Products" },
     seoDescription: {
       type: String,
       default:
-        "Abi Foods & Oils brings you traditional marachekku groundnut, sesame, and coconut oils, along with authentic sambar powder, curry masala, idli podi, health mix, and more from Erode.",
+        "Goavah Naturals brings you natural, traditionally made products from Zamin Uthukuli, Pollachi, Coimbatore District.",
     },
 
     maintenanceMode: { type: Boolean, default: false },

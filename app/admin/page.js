@@ -31,7 +31,7 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-forest">Dashboard</h1>
-      <p className="mt-1 text-sm text-muted">Welcome back — here&rsquo;s how Abi Foods and Oils is doing.</p>
+      <p className="mt-1 text-sm text-muted">Welcome back — here&rsquo;s how Goavah Naturals is doing.</p>
 
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Today's Sales" value={`₹${data.todaySales}`} sub={`${data.todayOrderCount} orders`} />

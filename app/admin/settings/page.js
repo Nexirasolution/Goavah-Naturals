@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { INDIAN_STATES } from "@/lib/indianStates";
 
 const DEFAULT_SETTINGS = {
-  storeName: "Abi Foods and Oils",
-  email: "abifoodsandoils@gmail.com",
-  phone: "9344936684",
-  whatsapp: "919344936684",
-  address: "Kosakattur, Kodumudi, Erode, Tamil Nadu",
+  storeName: "Goavah Naturals",
+  email: "goavahnaturals@gmail.com",
+  phone: "9626200999",
+  whatsapp: "919626200999",
+  address: "Zamin Uthukuli, Pollachi, Coimbatore District, Tamil Nadu - 642004",
   shippingFee: "49",
   freeShipping: "999",
   stateShippingRates: [],
@@ -16,9 +16,9 @@ const DEFAULT_SETTINGS = {
   instagram: "",
   facebook: "",
   youtube: "",
-  seoTitle: "Abi Foods and Oils | Wood Cold-Pressed Oils & Traditional Spice Powders",
+  seoTitle: "Goavah Naturals | Natural & Traditional Products",
   seoDescription:
-    "Abi Foods and Oils — wood cold-pressed groundnut, sesame & coconut oils and traditional spice powders, made in Kosakattur, Kodumudi, Erode.",
+    "Goavah Naturals — natural, traditionally made products from Zamin Uthukuli, Pollachi, Coimbatore District.",
   maintenanceMode: false,
 };
 

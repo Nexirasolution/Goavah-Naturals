@@ -26,21 +26,17 @@ async function getData() {
 }
 
 const WHY_CHOOSE = [
-  { title: "Wood Cold-Pressed", desc: "Traditional marachekku extraction, no heat" },
-  { title: "100% Natural", desc: "No chemicals, no preservatives added" },
-  { title: "Farm Fresh Spices", desc: "Sourced and ground in small batches" },
+  { title: "100% Natural", desc: "No chemicals, no synthetic additives" },
+  { title: "Herbal & Ayurvedic", desc: "Traditional formulations, time-tested recipes" },
+  { title: "Handmade in Small Batches", desc: "Crafted with care in Pollachi, Tamil Nadu" },
   { title: "Pan India Delivery", desc: "Safe & timely, everywhere" },
 ];
 
 // Map your Category collection's `name` field (as entered in the admin panel)
 // to a fallback image. Update these keys to match your actual category names.
 const CATEGORY_IMAGES = {
-  "Cold-Pressed Oils": "/categroy/cold-pressed-oils.png",
-  "Sambar & Curry Masalas": "/categroy/masala-powders.png",
-  "Spice Powders": "/categroy/spice-powders.png",
-  "Health Mix & Malt": "/categroy/health-mix.png",
-  "Traditional Podi": "/categroy/podi.png",
-  "Turmeric & Roots": "/categroy/turmeric.png",
+  "Food Products": "/categroy/food-products.png",
+  "Spiritual Products": "/categroy/spiritual-products.png",
 };
 
 export default async function HomePage() {
@@ -53,15 +49,31 @@ export default async function HomePage() {
 
       <HeroSlider />
 
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8 md:py-16">
-        <div className="mb-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
-            Wood Pressed &middot; Farm Fresh
+      {/* Rooted in tradition intro band */}
+      <section className="border-y border-gold/20 bg-champagne/40">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-5 py-10 text-center md:px-8">
+          <LeafIcon className="h-6 w-6 text-forest" />
+          <h2 className="font-display text-2xl italic text-forest md:text-3xl">
+            Rooted in Tradition, Crafted by Hand
+          </h2>
+          <p className="max-w-2xl font-body text-sm text-ink/70 md:text-base">
+            Every Goavah Naturals product is made in small batches using time-tested
+            Ayurvedic recipes &mdash; no shortcuts, no synthetic additives, just nature
+            prepared with care.
           </p>
-          <h2 className="mt-2 font-body text-3xl font-bold italic text-forest md:text-4xl">
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="mx-auto max-w-7xl px-5 py-14 md:px-8 md:py-16">
+        <div className="mb-10 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
+            Herbal &middot; Natural &middot; Spiritual
+          </p>
+          <h2 className="mt-2 font-display text-3xl italic text-forest md:text-4xl">
             Shop by Category
           </h2>
+          <div className="mx-auto mt-3 h-px w-16 bg-gold/40" />
         </div>
 
         {categories.length === 0 ? (
@@ -69,24 +81,26 @@ export default async function HomePage() {
             Categories will appear here once added from the admin panel.
           </p>
         ) : (
-          <div className="grid grid-cols-3 justify-items-center gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6 md:gap-x-6">
+          <div className="grid grid-cols-3 justify-items-center gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6 md:gap-x-6">
             {categories.map((cat) => (
               <Link
                 key={cat._id}
                 href={`/products?category=${cat._id}`}
                 className="group flex flex-col items-center"
               >
-                <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg md:h-28 md:w-28">
-                  <Image
-                    src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
-                    alt={cat.name}
-                    fill
-                    sizes="(max-width:768px) 80px, 112px"
-                    className="object-cover"
-                  />
+                <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-double border-gold/50 bg-champagne p-1 shadow-soft transition group-hover:border-forest/50 md:h-28 md:w-28">
+                  <div className="relative h-full w-full overflow-hidden rounded-full">
+                    <Image
+                      src={cat.image?.url || CATEGORY_IMAGES[cat.name] || "/categroy/default.png"}
+                      alt={cat.name}
+                      fill
+                      sizes="(max-width:768px) 80px, 112px"
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
 
-                <h3 className="mt-2 w-20 text-center text-xs font-medium text-gray-800 transition group-hover:text-green-700 md:w-28 md:text-sm">
+                <h3 className="mt-3 w-20 text-center font-body text-xs font-medium text-ink/80 transition group-hover:text-forest md:w-28 md:text-sm">
                   {cat.name}
                 </h3>
               </Link>
@@ -97,18 +111,18 @@ export default async function HomePage() {
 
       {/* Best Selling products */}
       {bestSelling.length > 0 && (
-        <section className="bg-champagne/50 py-16">
+        <section className="border-y border-gold/20 bg-champagne/40 py-16">
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="mb-10 flex items-end justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gold-dark">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
                   Customer Favorites
                 </p>
-                <h2 className="mt-2 font-body text-3xl font-bold italic text-forest md:text-4xl">
+                <h2 className="mt-2 font-display text-3xl italic text-forest md:text-4xl">
                   Best Selling Products
                 </h2>
               </div>
-              <Link href="/products" className="hidden text-sm font-semibold text-forest hover:underline md:block">
+              <Link href="/products" className="hidden font-body text-sm font-semibold text-forest hover:underline md:block">
                 View all &rarr;
               </Link>
             </div>
@@ -118,11 +132,10 @@ export default async function HomePage() {
               ))}
             </div>
 
-            {/* Shop Now CTA */}
             <div className="mt-10 flex justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3 font-body text-sm font-semibold italic text-white transition hover:bg-forest/90"
+                className="inline-flex items-center gap-2 rounded-full bg-forest px-8 py-3 font-body text-sm font-semibold italic text-white transition hover:bg-forest-light"
               >
                 Shop Now
                 <span aria-hidden="true">&rarr;</span>
@@ -134,19 +147,44 @@ export default async function HomePage() {
 
       {/* Why choose us */}
       <section className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-        <div className="mb-10 text-center">
-          <h2 className="font-body text-3xl font-bold italic text-forest md:text-4xl">Why Choose Us?</h2>
+        <div className="mb-12 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">
+            Our Promise
+          </p>
+          <h2 className="mt-2 font-display text-3xl italic text-forest md:text-4xl">
+            Why Choose Us?
+          </h2>
+          <div className="mx-auto mt-3 h-px w-16 bg-gold/40" />
         </div>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {WHY_CHOOSE.map((item) => (
             <div key={item.title} className="text-center">
-              <span className="badge-stamp mx-auto flex h-16 w-16 items-center justify-center border-gold/40 bg-forest text-ivory">
+              <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-gold/50 bg-forest text-ivory">
                 <LeafIcon className="h-7 w-7" />
               </span>
-              <p className="mt-4 font-body text-sm font-bold italic text-ink">{item.title}</p>
-              <p className="mt-1 text-xs text-muted">{item.desc}</p>
+              <p className="mt-4 font-display text-sm font-bold italic text-ink">{item.title}</p>
+              <p className="mt-1 font-body text-xs text-muted">{item.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Closing CTA band */}
+      <section className="border-t border-gold/20 bg-forest py-14 text-center text-ivory">
+        <div className="mx-auto max-w-2xl px-5 md:px-8">
+          <h2 className="font-display text-2xl italic md:text-3xl">
+            Bring Nature's Care Into Your Everyday
+          </h2>
+          <p className="mt-3 font-body text-sm text-ivory/80 md:text-base">
+            Handmade skincare, wellness and spiritual essentials, delivered to your door.
+          </p>
+          <Link
+            href="/products"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-8 py-3 font-body text-sm font-semibold text-ink transition hover:bg-gold-light"
+          >
+            Explore Products
+            <span aria-hidden="true">&rarr;</span>
+          </Link>
         </div>
       </section>
 

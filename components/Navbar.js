@@ -15,15 +15,13 @@ const LINKS = [
 
 function ShippingMarquee({ settings }) {
   const freeShipping = settings?.freeShipping ?? 999;
-  // const shippingFee = settings?.shippingFee ?? 49;
 
   const messages = [
     `🚚 FREE SHIPPING on orders above ₹${freeShipping}`,
-    `🌿 Traditionally Made, Cold-Pressed Oils`,
+    `🌿 Naturally & Traditionally Made`,
     `✅ Pan India Delivery`,
   ];
 
-  // Duplicate the messages so the marquee loops seamlessly
   const track = [...messages, ...messages];
 
   return (
@@ -62,7 +60,7 @@ export default function Navbar({ settings }) {
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const storeName = settings?.storeName || "Abi Foods & Oils";
+  const storeName = settings?.storeName || "Goavah Naturals";
   const [brand, tagline] = storeName.includes(" ")
     ? [storeName.split(" ")[0], storeName.split(" ").slice(1).join(" ")]
     : [storeName, ""];
@@ -81,24 +79,26 @@ export default function Navbar({ settings }) {
     <>
       <ShippingMarquee settings={settings} />
 
-      <header className="sticky top-0 z-40 border-b border-gold/20 bg-ivory/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 md:px-8">
+      <header className="sticky top-0 z-40 border-b border-gold/25 bg-ivory/95 backdrop-blur-md shadow-[0_1px_0_rgba(139,74,32,0.06)]">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/images/logo.png"
-              alt={storeName}
-              width={55}
-              height={55}
-              priority
-              className="h-12 w-12 object-contain"
-            />
+            <div className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-gold/40 p-1">
+              <Image
+                src="/images/logo.png"
+                alt={storeName}
+                width={55}
+                height={55}
+                priority
+                className="h-full w-full object-contain"
+              />
+            </div>
 
             <div className="leading-tight">
-              <h1 className="font-display text-xl font-bold uppercase italic text-forest">
+              <h1 className="font-cormorant text-2xl font-bold uppercase italic text-forest">
                 {brand}
               </h1>
               {tagline && (
-                <p className="text-xs italic uppercase tracking-[0.25em] text-muted">
+                <p className="text-xs italic uppercase tracking-[0.25em] text-gold-dark">
                   {tagline}
                 </p>
               )}
@@ -106,24 +106,27 @@ export default function Navbar({ settings }) {
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
-            {LINKS.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="text-sm font-medium text-ink/80 transition hover:text-forest"
-              >
-                {l.label}
-              </Link>
+            {LINKS.map((l, idx) => (
+              <span key={l.href} className="flex items-center gap-8">
+                <Link
+                  href={l.href}
+                  className="font-body text-sm font-medium tracking-wide text-ink/80 transition hover:text-forest"
+                >
+                  {l.label}
+                </Link>
+                {idx < LINKS.length - 1 && (
+                  <span className="h-1 w-1 rounded-full bg-gold/50" aria-hidden="true" />
+                )}
+              </span>
             ))}
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Desktop expanding search */}
             <div className="hidden items-center md:flex">
               {searchOpen ? (
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="flex items-center overflow-hidden rounded-full border border-gray-200 bg-white pl-4 pr-1 py-1.5 shadow-sm transition-all"
+                  className="flex items-center overflow-hidden rounded-full border border-gold/30 bg-white pl-4 pr-1 py-1.5 shadow-sm transition-all"
                 >
                   <input
                     autoFocus
@@ -131,7 +134,7 @@ export default function Navbar({ settings }) {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search products..."
-                    className="w-48 bg-transparent text-sm outline-none placeholder:text-gray-400"
+                    className="w-48 bg-transparent text-sm outline-none placeholder:text-muted"
                   />
                   <button
                     type="button"
@@ -148,7 +151,7 @@ export default function Navbar({ settings }) {
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-forest transition hover:bg-champagne"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne"
                   aria-label="Search"
                 >
                   <Search className="h-5 w-5" />
@@ -156,10 +159,9 @@ export default function Navbar({ settings }) {
               )}
             </div>
 
-            {/* Mobile search toggle icon (next to cart) */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-forest transition hover:bg-champagne md:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 text-forest transition hover:bg-champagne md:hidden"
               aria-label="Search"
             >
               {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
@@ -203,21 +205,20 @@ export default function Navbar({ settings }) {
           </div>
         </div>
 
-        {/* Mobile search bar row (below header) */}
         {searchOpen && (
           <div className="border-t border-gold/20 bg-ivory px-5 py-3 md:hidden">
             <form
               onSubmit={handleSearchSubmit}
-              className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 shadow-sm"
+              className="flex items-center gap-2 rounded-full border border-gold/30 bg-white px-4 py-2.5 shadow-sm"
             >
-              <Search className="h-4 w-4 shrink-0 text-gray-400" />
+              <Search className="h-4 w-4 shrink-0 text-muted" />
               <input
                 autoFocus
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search products..."
-                className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
               />
             </form>
           </div>
@@ -230,7 +231,7 @@ export default function Navbar({ settings }) {
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-2 text-sm font-medium text-ink/80 hover:bg-champagne"
+                className="rounded-lg px-2 py-2 font-body text-sm font-medium text-ink/80 hover:bg-champagne"
               >
                 {l.label}
               </Link>

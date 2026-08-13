@@ -11,7 +11,7 @@ export default function NotFound() {
         <LeafIcon className="h-12 w-12 text-forest/30" />
         <h1 className="mt-6 font-display text-3xl font-bold text-forest">Page Not Found</h1>
         <p className="mt-3 text-muted">
-          Looks like this page has been pressed out of stock. The page you&rsquo;re looking for doesn&rsquo;t exist or has moved.
+          Looks like this page has wandered off the shelf. The page you&rsquo;re looking for doesn&rsquo;t exist or has moved.
         </p>
         <Link
           href="/"

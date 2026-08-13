@@ -6,7 +6,7 @@ export async function POST(req) {
     const formData = await req.formData();
 
     const file = formData.get("file");
-    const folder = formData.get("folder") || "abi-products";
+    const folder = formData.get("folder") || "goaavah-products";
 
     if (!file) {
       return NextResponse.json(

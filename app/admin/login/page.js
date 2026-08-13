@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
           <span className="badge-stamp flex h-14 w-14 items-center justify-center border-gold/40 bg-forest text-ivory">
             <LeafIcon className="h-6 w-6" />
           </span>
-          <h1 className="mt-4 font-display text-xl font-bold text-forest">Abi Foods Admin</h1>
+          <h1 className="mt-4 font-display text-xl font-bold text-forest">Goavah Naturals Admin</h1>
           <p className="text-xs text-muted">Sign in to manage your store</p>
         </div>
 

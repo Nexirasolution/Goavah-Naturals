@@ -25,7 +25,7 @@ export default function SearchBar() {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for oils, spice powders & more..."
+        placeholder="Search products..."
         className="w-full flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
       />
       <button

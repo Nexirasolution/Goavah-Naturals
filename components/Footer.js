@@ -53,11 +53,11 @@ function MeeshoIcon({ className }) {
 }
 
 export default function Footer({ settings }) {
-  const storeName = settings?.storeName || "Abi Foods & Oils";
-  const phone = settings?.phone || "+91 9344936684";
-  const whatsapp = settings?.whatsapp || "919344936684";
-  const address = settings?.address || "Kosakattur, Kodumudi, Erode, Tamil Nadu";
-  const email = settings?.email || "abifoodsandoils@gmail.com";
+  const storeName = settings?.storeName || "Goavah Naturals";
+  const phone = settings?.phone || "+91 9626200999";
+  const whatsapp = settings?.whatsapp || "919626200999";
+  const address = settings?.address || "Zamin Uthukuli, Pollachi, Coimbatore District, Tamil Nadu - 642004";
+  const email = settings?.email || "goavahnaturals@gmail.com";
 
   // No public social/marketplace links provided yet — leave blank until settings supply them.
   const instagram = settings?.instagram || "";
@@ -75,55 +75,57 @@ export default function Footer({ settings }) {
   ].filter((s) => s.href);
 
   return (
-    <footer className="bg-forest-dark text-ivory py-12">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <footer className="overflow-x-hidden border-t border-gold/30 bg-forest-dark text-ivory">
+      <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 sm:py-14 grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Column 1 - Brand & Contact */}
         <div>
           <div className="flex flex-col items-center gap-3 mb-5 text-center md:items-start md:text-left">
-            <Image
-              src="/images/logo.png"
-              alt={`${storeName} Logo`}
-              width={80}
-              height={80}
-              className="rounded-full object-contain"
-            />
+            <div className="rounded-full border-2 border-dashed border-gold/40 bg-white p-1.5">
+              <Image
+                src="/images/logo.png"
+                alt={`${storeName} Logo`}
+                width={80}
+                height={80}
+                className="h-16 w-16 rounded-full object-contain sm:h-20 sm:w-20"
+              />
+            </div>
 
-            <h2 className="text-2xl font-semibold uppercase italic">{storeName}</h2>
+            <h2 className="font-cormorant text-xl font-bold uppercase italic sm:text-2xl">{storeName}</h2>
           </div>
 
-          <p className="text-champagne leading-relaxed max-w-md">
-            Fresh, traditionally made oils and food products from Erode.
-            Cold-pressed marachekku oils and natural home-style powders.
+          <p className="font-body text-champagne leading-relaxed max-w-md text-center text-sm sm:text-left sm:text-base">
+            Herbal, natural &amp; spiritual essentials &mdash; handcrafted in small
+            batches using traditional recipes, from Pollachi, Coimbatore.
           </p>
 
-          <div className="mt-6 space-y-3 text-champagne">
+          <div className="mt-6 space-y-3 font-body text-champagne text-sm sm:text-base">
             {phone && (
-              <p className="flex items-center gap-2">
-                <PhoneIcon className="w-5 h-5" />
-                {phone}
+              <p className="flex min-w-0 items-center justify-center gap-2 sm:justify-start">
+                <PhoneIcon className="w-5 h-5 text-gold-light shrink-0" />
+                <span className="break-words">{phone}</span>
               </p>
             )}
 
             {email && (
-              <p className="flex items-center gap-2">
-                <span className="w-5 h-5 flex items-center justify-center">✉</span>
-                {email}
+              <p className="flex min-w-0 items-center justify-center gap-2 sm:justify-start">
+                <span className="w-5 h-5 flex items-center justify-center text-gold-light shrink-0">✉</span>
+                <span className="min-w-0 break-all">{email}</span>
               </p>
             )}
 
             {address && (
-              <p className="flex items-center gap-2">
-                <LocationIcon className="w-5 h-5" />
-                {address}
+              <p className="flex min-w-0 items-start justify-center gap-2 sm:justify-start">
+                <LocationIcon className="w-5 h-5 text-gold-light shrink-0 mt-0.5" />
+                <span className="min-w-0 break-words">{address}</span>
               </p>
             )}
 
             {settings?.gst && (
-              <p className="text-sm text-champagne/70">GST No: {settings.gst}</p>
+              <p className="text-sm text-champagne/70 text-center sm:text-left">GST No: {settings.gst}</p>
             )}
 
             {settings?.msme && (
-              <p className="text-sm text-champagne/70">MSME Registration: {settings.msme}</p>
+              <p className="text-sm text-champagne/70 text-center sm:text-left">MSME Registration: {settings.msme}</p>
             )}
 
             {whatsapp && (
@@ -131,16 +133,16 @@ export default function Footer({ settings }) {
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-gold-light transition"
+                className="flex items-center justify-center gap-2 hover:text-gold-light transition sm:justify-start"
               >
-                <WhatsappIcon className="w-5 h-5" />
+                <WhatsappIcon className="w-5 h-5 shrink-0" />
                 WhatsApp Us
               </a>
             )}
           </div>
 
           {socialLinks.length > 0 && (
-            <div className="mt-6 flex items-center gap-5">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:justify-start">
               {socialLinks.map(({ href, label, Icon }) => (
                 <a
                   key={label}
@@ -149,12 +151,12 @@ export default function Footer({ settings }) {
                   rel="noopener noreferrer"
                   title={label}
                   aria-label={label}
-                  className="flex flex-col items-center gap-1 text-champagne hover:text-gold-light hover:-translate-y-0.5 transition-transform text-xs font-medium"
+                  className="flex flex-col items-center gap-1 font-body text-champagne hover:text-gold-light hover:-translate-y-0.5 transition-transform text-xs font-medium"
                 >
                   {Icon ? (
-                    <Icon className="w-12 h-12 drop-shadow-md" />
+                    <Icon className="w-11 h-11 sm:w-12 sm:h-12 drop-shadow-md" />
                   ) : (
-                    <span className="w-11 h-11 flex items-center justify-center rounded-full bg-terracotta text-white text-[10px] font-bold">
+                    <span className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center rounded-full bg-terracotta text-white text-[10px] font-bold">
                       YT
                     </span>
                   )}
@@ -167,12 +169,12 @@ export default function Footer({ settings }) {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-gold/20 mt-10 pt-5 text-center text-sm text-champagne/70">
-        <p>
+      <div className="border-t border-gold/20 px-4 py-5 text-center text-sm text-champagne/70">
+        <p className="font-body">
           © {new Date().getFullYear()} {storeName}. All rights reserved.
         </p>
 
-        <p className="mt-2">
+        <p className="mt-2 font-body">
           Developed &amp; Designed by{" "}
           <a
             href="https://www.nexirasolution.in/"

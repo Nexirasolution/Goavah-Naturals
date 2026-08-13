@@ -220,7 +220,7 @@ export default function AdminCategoriesPage() {
             <ImageUploader
               images={form.image}
               onChange={(imgs) => setForm({ ...form, image: imgs })}
-              folder="abi-foods-categories"
+              folder="goavah-naturals-categories"
               multiple={false}
             />
           </div>

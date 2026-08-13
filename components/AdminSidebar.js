@@ -70,11 +70,11 @@ export default function AdminSidebar({ open, setOpen }) {
 
           <div>
             <p className="font-display text-lg font-bold">
-              Abi Admin
+              Goavah Admin
             </p>
 
             <p className="text-[10px] uppercase tracking-widest text-ivory/60">
-              Foods & Oils
+              Naturals
             </p>
           </div>
         </div>

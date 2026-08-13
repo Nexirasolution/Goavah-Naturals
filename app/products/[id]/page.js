@@ -48,7 +48,7 @@ export default async function ProductDetailPage({ params }) {
       content:
         product.description ||
         product.shortDescription ||
-        "A premium product from Abi Foods and Oils, made with natural ingredients and traditional methods.",
+        "A premium product from Goavah Naturals, made with natural ingredients and traditional methods.",
     },
     {
       title: "Product Details",

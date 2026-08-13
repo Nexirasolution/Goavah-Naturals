@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function ImageUploader({
   images = [],
   onChange,
-  folder = "abi-products",
+  folder = "goavah-products",
   multiple = true,
 }) {
   const inputRef = useRef(null);

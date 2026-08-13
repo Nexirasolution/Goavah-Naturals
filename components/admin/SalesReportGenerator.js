@@ -45,12 +45,12 @@ export default function SalesReportGenerator() {
     // Header
     doc.setFontSize(16);
     doc.setTextColor(30, 60, 45);
-    doc.text("Abi Foods & Oils", pageWidth / 2, 16, { align: "center" });
+    doc.text("Goavah Naturals", pageWidth / 2, 16, { align: "center" });
 
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text("Kosakattur, Kodumudi, Erode", pageWidth / 2, 22, { align: "center" });
-    doc.text("Ph: 9344936684  |  abifoodsandoils@gmail.com", pageWidth / 2, 27, { align: "center" });
+    doc.text("Zamin Uthukuli, Pollachi, Coimbatore District - 642004", pageWidth / 2, 22, { align: "center" });
+    doc.text("Ph: 9626200999  |  goavahnaturals@gmail.com", pageWidth / 2, 27, { align: "center" });
 
     doc.setFontSize(12);
     doc.setTextColor(80, 80, 80);
@@ -136,7 +136,7 @@ export default function SalesReportGenerator() {
       doc.setFontSize(8);
       doc.setTextColor(150, 150, 150);
       doc.text(
-        "Abi Foods & Oils — Kosakattur, Kodumudi, Erode",
+        "Goavah Naturals — Zamin Uthukuli, Pollachi, Coimbatore District",
         pageWidth / 2,
         pageHeight - 8,
         { align: "center" }
@@ -149,10 +149,10 @@ export default function SalesReportGenerator() {
   return (
     <div className="rounded-xl2 border border-gold/15 bg-white p-6 shadow-card">
       <div className="mb-1">
-        <h2 className="font-display text-base font-bold text-forest">Abi Foods & Oils</h2>
-        <p className="text-xs text-muted">Kosakattur, Kodumudi, Erode</p>
+        <h2 className="font-display text-base font-bold text-forest">Goavah Naturals</h2>
+        <p className="text-xs text-muted">Zamin Uthukuli, Pollachi, Coimbatore District - 642004</p>
         <p className="text-xs text-muted">
-          Ph: 9344936684 · abifoodsandoils@gmail.com
+          Ph: 9626200999 · goavahnaturals@gmail.com
         </p>
       </div>
 

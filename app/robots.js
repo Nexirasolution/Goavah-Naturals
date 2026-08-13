@@ -1,4 +1,4 @@
-const BASE_URL = "https://www.abifoodsandoils.com";
+const BASE_URL = "https://www.goavahnaturals.com";
 
 export default function robots() {
   return {
