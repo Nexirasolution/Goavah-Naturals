@@ -25,9 +25,9 @@ export async function generateMetadata() {
       settings.seoDescription ||
       "Goavah Naturals — natural, traditionally made products from Zamin Uthukuli, Pollachi, Coimbatore District.",
     icons: {
-      icon: "/images/logo.png",
-      shortcut: "/images/logo.png",
-      apple: "/images/logo.png",
+      icon: "/images/logo.jpeg",
+      shortcut: "/images/logo.jpeg",
+      apple: "/images/logo.jpeg",
     },
   };
 }

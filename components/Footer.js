@@ -82,7 +82,7 @@ export default function Footer({ settings }) {
           <div className="flex flex-col items-center gap-3 mb-5 text-center md:items-start md:text-left">
             <div className="rounded-full border-2 border-dashed border-gold/40 bg-white p-1.5">
               <Image
-                src="/images/logo.png"
+                src="/images/logo.jpeg"
                 alt={`${storeName} Logo`}
                 width={80}
                 height={80}

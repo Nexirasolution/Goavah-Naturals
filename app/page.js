@@ -81,12 +81,14 @@ export default async function HomePage() {
             Categories will appear here once added from the admin panel.
           </p>
         ) : (
-          <div className="grid grid-cols-3 justify-items-center gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6 md:gap-x-6">
+          <div
+            className="flex snap-x snap-mandatory gap-x-4 overflow-x-auto scroll-smooth px-1 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:gap-x-6"
+          >
             {categories.map((cat) => (
               <Link
                 key={cat._id}
                 href={`/products?category=${cat._id}`}
-                className="group flex flex-col items-center"
+                className="group flex shrink-0 snap-start flex-col items-center"
               >
                 <div className="relative h-20 w-20 overflow-hidden rounded-full border-4 border-double border-gold/50 bg-champagne p-1 shadow-soft transition group-hover:border-forest/50 md:h-28 md:w-28">
                   <div className="relative h-full w-full overflow-hidden rounded-full">

@@ -80,27 +80,25 @@ export default function Navbar({ settings }) {
       <header className="sticky top-0 z-40 border-b border-gold/25 bg-ivory/95 backdrop-blur-md shadow-[0_1px_0_rgba(139,74,32,0.06)]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 md:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 border-dashed border-gold/40 p-1">
+            <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-gold/40">
               <Image
-                src="/images/logo.png"
+                src="/images/logo.jpeg"
                 alt={storeName}
                 width={55}
                 height={55}
                 priority
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
               />
             </div>
 
-            <div className="leading-tight">
-              <h1 className="font-cormorant text-2xl font-bold uppercase italic text-forest">
-                {brand}
-              </h1>
-              {tagline && (
-                <p className="text-xs italic uppercase tracking-[0.25em] text-gold-dark">
-                  {tagline}
-                </p>
-              )}
-            </div>
+            <Image
+              src="/images/logo-wordmark.png"
+              alt={storeName}
+              width={220}
+              height={105}
+              priority
+              className="h-10 w-auto object-contain sm:h-12 md:h-14"
+            />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
