@@ -1,4 +1,4 @@
-const BASE_URL = "https://www.goavahnaturals.com";
+const BASE_URL = "https://www.goavah.in";
 
 export default function robots() {
   return {
