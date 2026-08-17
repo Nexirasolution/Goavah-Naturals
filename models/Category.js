@@ -16,4 +16,8 @@ const CategorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Matches Category.find({ isActive: true }).sort({ sortOrder: 1 }) used on
+// the homepage and products page filter bar.
+CategorySchema.index({ isActive: 1, sortOrder: 1 });
+
 export default mongoose.models.Category || mongoose.model("Category", CategorySchema);

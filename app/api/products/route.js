@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import "@/models/Category";
+import { buildProductFilter, getSortSpec } from "@/lib/productQuery";
 
 function slugify(text) {
   return text
@@ -22,19 +23,6 @@ function normalizeMedia(media) {
   }));
 }
 
-// Escape regex special characters so search terms like "gift+set" or "100%" don't break the query
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-const SORT_MAP = {
-  newest: { createdAt: -1 },
-  "price-asc": { price: 1 },
-  "price-desc": { price: -1 },
-  "name-asc": { name: 1 },
-  "name-desc": { name: -1 },
-};
-
 export async function GET(req) {
   try {
     await connectDB();
@@ -54,35 +42,8 @@ export async function GET(req) {
     const rawLimit = parseInt(searchParams.get("limit") || "0", 10);
     const limit = hasPageParam ? (rawLimit > 0 ? rawLimit : 12) : rawLimit;
 
-    const query = {};
-    if (category) query.category = category;
-    if (featured === "true") query.isFeatured = true;
-    if (activeOnly === "true") query.isActive = true;
-
-    if (search) {
-      const safe = escapeRegex(search);
-      query.$or = [
-        { name: { $regex: safe, $options: "i" } },
-        { description: { $regex: safe, $options: "i" } },
-        { shortDescription: { $regex: safe, $options: "i" } },
-        { sku: { $regex: safe, $options: "i" } },
-        { tags: { $regex: safe, $options: "i" } },
-      ];
-    }
-
-    // Price range filter
-    if (minPrice || maxPrice) {
-      query.price = {};
-      const min = Number(minPrice);
-      const max = Number(maxPrice);
-      if (minPrice && Number.isFinite(min)) query.price.$gte = min;
-      if (maxPrice && Number.isFinite(max)) query.price.$lte = max;
-      if (Object.keys(query.price).length === 0) delete query.price;
-    }
-
-    // Products are ordered by SKU across the site by default;
-    // an explicit `sort` param overrides that.
-    const sortSpec = (sort && SORT_MAP[sort]) || { sku: 1 };
+    const query = buildProductFilter({ category, search, featured, activeOnly, minPrice, maxPrice });
+    const sortSpec = getSortSpec(sort);
 
     let cursor = Product.find(query).populate("category", "name slug").sort(sortSpec);
 

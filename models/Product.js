@@ -63,11 +63,21 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Full-text search across name/description/tags (used by ?search=)
 ProductSchema.index({
   name: "text",
   description: "text",
   tags: "text",
 });
+
+// Storefront queries always filter on isActive first, then narrow by
+// category or isFeatured, or sort by createdAt/price. Without these,
+// Mongo falls back to a full collection scan on every products page,
+// category page, and homepage best-seller load.
+ProductSchema.index({ isActive: 1, category: 1 });
+ProductSchema.index({ isActive: 1, isFeatured: 1 });
+ProductSchema.index({ isActive: 1, createdAt: -1 });
+ProductSchema.index({ isActive: 1, price: 1 });
 
 export default mongoose.models.Product ||
   mongoose.model("Product", ProductSchema);

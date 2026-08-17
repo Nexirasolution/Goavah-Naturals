@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { CATEGORY_ICONS, LeafIcon } from "./Icons";
 
@@ -13,32 +13,65 @@ const SORT_OPTIONS = [
 ];
 
 const PAGE_SIZE = 12;
+const SEARCH_DEBOUNCE_MS = 400;
 
-export default function ProductsGrid({ initialCategory, initialSearch }) {
-  const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function ProductsGrid({
+  initialCategory,
+  initialSearch,
+  initialCategories = [],
+  initialProducts = [],
+  initialPagination = null,
+}) {
+  const [categories, setCategories] = useState(initialCategories);
+  const [products, setProducts] = useState(initialProducts);
+  // Nothing to load on first paint if the server already handed us data
+  const [loading, setLoading] = useState(initialProducts.length === 0 && !initialPagination);
   const [activeCategory, setActiveCategory] = useState(initialCategory || "");
+
+  // `search` reflects what's typed immediately (so the input feels responsive);
+  // `debouncedSearch` is what actually drives the API call, updated only after
+  // the user pauses typing. This avoids firing a DB query on every keystroke.
   const [search, setSearch] = useState(initialSearch || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch || "");
+
   const [sortBy, setSortBy] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState(null);
+  const [pagination, setPagination] = useState(initialPagination);
+
+  // Skip the very first products fetch when the server already supplied
+  // matching initial data for the default (page 1, no extra filters) view.
+  const skippedFirstFetch = useRef(
+    Boolean(initialPagination) && !sortBy && !minPrice && !maxPrice
+  );
 
   useEffect(() => {
+    if (categories.length) return; // already have server-supplied categories
     fetch("/api/categories?activeOnly=true")
       .then((r) => r.json())
       .then((d) => setCategories(d.categories || []));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Debounce the search box
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Any filter change should jump back to page 1
   useEffect(() => {
     setPage(1);
-  }, [activeCategory, search, sortBy, minPrice, maxPrice]);
+  }, [activeCategory, debouncedSearch, sortBy, minPrice, maxPrice]);
 
   useEffect(() => {
+    if (skippedFirstFetch.current) {
+      skippedFirstFetch.current = false;
+      return;
+    }
+
     setLoading(true);
     const params = new URLSearchParams({
       activeOnly: "true",
@@ -46,7 +79,7 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
       limit: String(PAGE_SIZE),
     });
     if (activeCategory) params.set("category", activeCategory);
-    if (search) params.set("search", search);
+    if (debouncedSearch) params.set("search", debouncedSearch);
     if (sortBy) params.set("sort", sortBy);
     if (minPrice) params.set("minPrice", minPrice);
     if (maxPrice) params.set("maxPrice", maxPrice);
@@ -58,11 +91,12 @@ export default function ProductsGrid({ initialCategory, initialSearch }) {
         setPagination(d.pagination || null);
       })
       .finally(() => setLoading(false));
-  }, [activeCategory, search, sortBy, minPrice, maxPrice, page]);
+  }, [activeCategory, debouncedSearch, sortBy, minPrice, maxPrice, page]);
 
   function clearFilters() {
     setActiveCategory("");
     setSearch("");
+    setDebouncedSearch("");
     setSortBy("");
     setMinPrice("");
     setMaxPrice("");
