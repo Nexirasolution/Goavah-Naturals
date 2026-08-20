@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/mongodb";
 import Banner from "@/models/Banner";
 import { deleteMediaFromCloudinary } from "@/lib/cloudinary";
@@ -27,6 +28,9 @@ export async function PUT(req, { params }) {
     });
 
     if (!banner) return NextResponse.json({ error: "Banner not found." }, { status: 404 });
+
+    revalidateTag("banners");
+
     return NextResponse.json({ banner });
   } catch (err) {
     console.error(err);
@@ -47,6 +51,9 @@ export async function DELETE(req, { params }) {
     }
 
     await banner.deleteOne();
+
+    revalidateTag("banners");
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Delete banner error:", err);

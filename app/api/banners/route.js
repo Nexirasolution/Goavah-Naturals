@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { connectDB } from "@/lib/mongodb";
 import Banner from "@/models/Banner";
 
@@ -37,6 +38,8 @@ export async function POST(req) {
       isActive: body.isActive !== undefined ? body.isActive : true,
       sortOrder: Number(body.sortOrder) || 0,
     });
+
+    revalidateTag("banners"); // <-- bust the homepage cache
 
     return NextResponse.json({ banner }, { status: 201 });
   } catch (err) {

@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { optimizedCloudinaryUrl } from "@/lib/cloudinaryUrl";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-export default function HeroSlider() {
-  const [slides, setSlides] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/banners?activeOnly=true")
-      .then((r) => r.json())
-      .then((data) => setSlides(data.banners || []))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="relative h-[260px] sm:h-[350px] md:h-[500px] lg:h-[650px] bg-champagne animate-pulse" />
-    );
-  }
+export default function HeroSlider({ initialSlides = [] }) {
+  const [slides] = useState(initialSlides);
 
   if (!slides.length) return null;
 
@@ -36,17 +23,10 @@ export default function HeroSlider() {
         modules={[Navigation, Pagination, Autoplay]}
         navigation={false}
         breakpoints={{
-          768: {
-            navigation: true,
-          },
+          768: { navigation: true },
         }}
-        pagination={{
-          clickable: true,
-        }}
-        autoplay={{
-          delay: 5000,
-          disableOnInteraction: false,
-        }}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop={slides.length > 1}
       >
         {slides.map((slide, index) => (
@@ -54,10 +34,12 @@ export default function HeroSlider() {
             <div className="relative h-full w-full">
               {slide.image?.url ? (
                 <Image
-                  src={slide.image.url}
+                  src={optimizedCloudinaryUrl(slide.image.url, { width: 1600 })}
                   alt={slide.title}
                   fill
                   priority={index === 0}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  loading={index === 0 ? "eager" : "lazy"}
                   sizes="100vw"
                   className="object-cover"
                 />
@@ -65,10 +47,8 @@ export default function HeroSlider() {
                 <div className="h-full w-full bg-champagne" />
               )}
 
-              {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
 
-              {/* Content */}
               <div className="absolute inset-0 flex items-center">
                 <div className="mx-auto w-full max-w-7xl px-5 md:px-8">
                   <div className="max-w-xs sm:max-w-md md:max-w-xl">
@@ -108,12 +88,12 @@ export default function HeroSlider() {
           height: 9px;
         }
         .hero-slider .swiper-pagination-bullet-active {
-          background: #c9a227; /* gold */
+          background: #c9a227;
           opacity: 1;
         }
         .hero-slider .swiper-button-next,
         .hero-slider .swiper-button-prev {
-          color: #c9a227; /* gold */
+          color: #c9a227;
         }
         .hero-slider .swiper-button-next::after,
         .hero-slider .swiper-button-prev::after {

@@ -10,6 +10,8 @@ import { CATEGORY_ICONS, LeafIcon } from "@/components/Icons";
 import HeroSlider from "@/components/HeroSlider";
 import { ArrowRight } from "lucide-react";
 import { getSettings } from "@/lib/settings";
+import { getActiveBanners } from "@/lib/banners";
+
 export const dynamic = "force-dynamic";
 
 async function getData() {
@@ -40,14 +42,19 @@ const CATEGORY_IMAGES = {
 };
 
 export default async function HomePage() {
-  const { categories, bestSelling } = await getData();
-  const settings = await getSettings();
+  // Run all three independently — categories/products stay live (force-dynamic),
+  // banners are cached for 60s via unstable_cache so they don't hit Mongo every request.
+  const [{ categories, bestSelling }, settings, banners] = await Promise.all([
+    getData(),
+    getSettings(),
+    getActiveBanners(),
+  ]);
 
   return (
     <>
       <Navbar settings={settings} />
 
-      <HeroSlider />
+      <HeroSlider initialSlides={banners} />
 
       {/* Rooted in tradition intro band */}
       <section className="border-y border-gold/20 bg-champagne/40">
