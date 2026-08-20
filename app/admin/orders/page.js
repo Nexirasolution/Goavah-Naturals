@@ -52,6 +52,7 @@ export default function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
   const [tracking, setTracking] = useState(EMPTY_TRACKING);
   const [toast, setToast] = useState(null); // { message, type } | null
@@ -121,6 +122,26 @@ export default function AdminOrdersPage() {
       showToast("Tracking details updated successfully");
     } else {
       showToast(data.error || "Failed to save tracking details", "error");
+    }
+  }
+
+  async function deleteOrder(order) {
+    const confirmed = window.confirm(
+      `Delete order ${order.orderNumber}? This permanently removes it and cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    const res = await fetch(`/api/orders/${order._id}`, { method: "DELETE" });
+    const data = await res.json().catch(() => ({}));
+    setDeleting(false);
+
+    if (res.ok) {
+      setSelected(null);
+      loadOrders();
+      showToast(`Order ${order.orderNumber} deleted`);
+    } else {
+      showToast(data.error || "Failed to delete order", "error");
     }
   }
 
@@ -212,6 +233,12 @@ export default function AdminOrdersPage() {
                       <button onClick={() => setSelected(o)} className="text-xs font-semibold text-forest hover:underline">
                         View
                       </button>
+                      <button
+                        onClick={() => deleteOrder(o)}
+                        className="text-xs font-semibold text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -252,12 +279,20 @@ export default function AdminOrdersPage() {
                 </div>
               </button>
 
-              <Link
-                href={`/admin/orders/${o._id}/label`}
-                className="mt-3 block w-full rounded-full border border-terracotta/40 py-2 text-center text-xs font-semibold text-terracotta"
-              >
-                Print shipping label
-              </Link>
+              <div className="mt-3 flex gap-2">
+                <Link
+                  href={`/admin/orders/${o._id}/label`}
+                  className="flex-1 rounded-full border border-terracotta/40 py-2 text-center text-xs font-semibold text-terracotta"
+                >
+                  Print shipping label
+                </Link>
+                <button
+                  onClick={() => deleteOrder(o)}
+                  className="rounded-full border border-red-300 px-4 py-2 text-center text-xs font-semibold text-red-600"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         )}
@@ -311,6 +346,12 @@ export default function AdminOrdersPage() {
                     </p>
                     <p className="mt-0.5 text-xs text-muted">
                       {item.sku ? `SKU: ${item.sku}` : "SKU: —"} · Qty {item.quantity}
+                    </p>
+                    {/* Temporary debug line — shows exactly what's stored for this
+                        item's image so it's easy to see if it's missing or broken.
+                        Safe to remove once the image issue is confirmed fixed. */}
+                    <p className="mt-0.5 break-all text-[10px] text-terracotta/70">
+                      {item.image ? item.image : "⚠ no image URL saved on this order"}
                     </p>
                   </div>
                   <span className="shrink-0 self-start text-ink">₹{item.price * item.quantity}</span>
@@ -386,13 +427,20 @@ export default function AdminOrdersPage() {
                 />
               </div>
             </div>
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex items-center justify-between gap-3">
               <button
                 onClick={saveTracking}
                 disabled={updating}
                 className="rounded-full bg-forest px-5 py-2 text-xs font-semibold text-ivory shadow-card disabled:opacity-60"
               >
                 {updating ? "Saving..." : "Save tracking"}
+              </button>
+              <button
+                onClick={() => deleteOrder(selected)}
+                disabled={deleting}
+                className="rounded-full border border-red-300 px-5 py-2 text-xs font-semibold text-red-600 disabled:opacity-60"
+              >
+                {deleting ? "Deleting..." : "Delete order"}
               </button>
             </div>
           </div>

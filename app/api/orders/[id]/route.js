@@ -61,3 +61,31 @@ export async function PUT(req, { params }) {
     return NextResponse.json({ error: "Failed to update order." }, { status: 500 });
   }
 }
+
+export async function DELETE(req, { params }) {
+  try {
+    await connectDB();
+    const { id } = await params;
+
+    const order = await Order.findById(id);
+    if (!order) return NextResponse.json({ error: "Order not found." }, { status: 404 });
+
+    // Restock only if this order's items actually decremented stock.
+    // "pending_payment" orders never did, so nothing to restore for those.
+    // Already-"cancelled" orders were already restocked when they were
+    // cancelled, so skip them too to avoid double-crediting stock.
+    if (order.status !== "pending_payment" && order.status !== "cancelled") {
+      for (const item of order.items) {
+        if (item.product) {
+          await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity } });
+        }
+      }
+    }
+
+    await Order.findByIdAndDelete(id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to delete order." }, { status: 500 });
+  }
+}
