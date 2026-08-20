@@ -34,6 +34,9 @@ export async function GET(req) {
   }
 }
 
+// Used for Cash-on-Delivery orders only. Online (Razorpay) orders are
+// created in /api/razorpay/create-order instead, so they exist as
+// "pending_payment" before the customer pays.
 export async function POST(req) {
   try {
     await connectDB();
@@ -47,7 +50,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
     }
 
-    // Validate stock and compute totals server-side
     let subtotal = 0;
     const validatedItems = [];
 
@@ -89,7 +91,7 @@ export async function POST(req) {
       statusHistory: [{ status: "pending", note: "Order placed" }],
     });
 
-    // Decrement stock
+    // Decrement stock immediately for COD — there's no payment gate to wait on.
     for (const item of validatedItems) {
       await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
     }

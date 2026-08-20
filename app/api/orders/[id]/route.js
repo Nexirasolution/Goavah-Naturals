@@ -26,10 +26,14 @@ export async function PUT(req, { params }) {
 
     if (body.status && body.status !== order.status) {
       if (body.status === "cancelled" && order.status !== "cancelled") {
-        // Restock items on cancellation
-        for (const item of order.items) {
-          if (item.product) {
-            await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity } });
+        // Only restock if stock was actually decremented for this order
+        // (i.e. it had reached "confirmed" or later, or was a COD "pending").
+        // "pending_payment" orders never decremented stock in the first place.
+        if (order.status !== "pending_payment") {
+          for (const item of order.items) {
+            if (item.product) {
+              await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.quantity } });
+            }
           }
         }
       }

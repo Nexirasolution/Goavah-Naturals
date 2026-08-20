@@ -1,4 +1,3 @@
-// models/Order.js
 import mongoose from "mongoose";
 
 const OrderItemSchema = new mongoose.Schema(
@@ -51,13 +50,16 @@ const OrderSchema = new mongoose.Schema(
       default: "pending",
     },
     razorpay: {
-      orderId: { type: String, default: "" },
+      orderId: { type: String, default: "", index: true, unique: true, sparse: true },
       paymentId: { type: String, default: "" },
       signature: { type: String, default: "" },
     },
+    // "pending_payment" = Razorpay order created, customer hasn't paid yet
+    //                      (or payment hasn't been confirmed by webhook/verify).
+    // "pending"         = COD order placed directly, no online payment involved.
     status: {
       type: String,
-      enum: ["pending", "confirmed", "packed", "shipped", "delivered", "cancelled"],
+      enum: ["pending_payment", "pending", "confirmed", "packed", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
     statusHistory: {

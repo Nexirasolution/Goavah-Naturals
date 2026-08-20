@@ -79,10 +79,15 @@ export default function CheckoutPage() {
 
     setLoading(true);
     try {
+      // Send customer + items now: create-order persists a "pending_payment"
+      // order immediately, before the payment popup even opens. That's the
+      // record the webhook (or /verify, or the /reconcile job) will confirm
+      // later — so the order exists in the DB even if this tab gets closed
+      // right after payment succeeds.
       const orderRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: total }),
+        body: JSON.stringify({ customer: form, items, shippingFee }),
       });
       const orderData = await orderRes.json();
       if (!orderRes.ok) throw new Error(orderData.error || "Failed to start payment.");
@@ -103,6 +108,10 @@ export default function CheckoutPage() {
         },
         theme: { color: "#1f3d2b" }, // forest color
         handler: async function (response) {
+          // Best-effort client-side confirmation for instant UI feedback.
+          // If this never runs (tab closed, network drop), the webhook
+          // (and the /reconcile safety net) still confirm the order —
+          // this call is a UX nicety, not the source of truth anymore.
           try {
             const verifyRes = await fetch("/api/razorpay/verify", {
               method: "POST",
@@ -111,9 +120,6 @@ export default function CheckoutPage() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                customer: form,
-                items,
-                shippingFee,
               }),
             });
             const verifyData = await verifyRes.json();
